@@ -19,6 +19,7 @@ var collision_object = function(){
   this.isHiggs = false ;
   
   // Long winded functions to add leptons, that can be refactored quite simply, I'm sure.
+  // Change to 1 function with an array to determine lepton combinations used.
   this.add_four_leptons  = function(){
     if(random()<0.5){
       this.nMu += 2 ;
