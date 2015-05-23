@@ -1,3 +1,10 @@
+// To save CPU time a map of cells is made in (r,phi) space.  The detector components are
+// mapped onto these cells.  As the particles pass through the detector they pass through
+// the cells and these light up the detector components.
+
+// We populate two arrays of cells.
+// A two dimensional array is used for looping over r and phi.
+// A one dimensional array is used for single line loops (eg to reset all cells easily.)
 function make_cells(){
   for(var u=0 ; u<NR ; u++){
     cells.push([]) ;
@@ -10,6 +17,8 @@ function make_cells(){
     }
   }
 }
+
+// This should only be used for debugging purposes, as it is very expensive!
 function draw_cells(context){
   for(var u=1 ; u<cells.length ; u++){
     for(var v=0 ; v<cells[u].length ; v++){
@@ -17,6 +26,8 @@ function draw_cells(context){
     }
   }
 }
+
+
 function cell_object(r, phi){
   this.rMid   = r   + 0.5*cellSizeR   ;
   this.phiMid = phi + 0.0*cellSizePhi ;
@@ -25,8 +36,13 @@ function cell_object(r, phi){
   this.phi1 = phi - 0.5*cellSizePhi ;
   this.phi2 = phi + 0.5*cellSizePhi ;
   
+  // General settings.
+  // Set is_touched to false at the start of each event, and true when a particle hits it.
   this.is_touched = false ;
+  // Some cells don't match up to detector components, so don't bother with them.
   this.is_in_acceptance = false ;
+  
+  // Each cell can belong to at least one subdetector segment.
   this.segment = null ;
   this.particle_types = [] ;
   this.particle_types['electron'] = false ;

@@ -1,3 +1,7 @@
+// A series of functions to update the header and footer so we can set images or text,
+// depending on the game state.  Mostly self explanatory, it's just moving images from a
+// hidden div to the header/footer and back again.
+
 function clear_header(){
   var hiddenDiv = Get('div_hidden') ;
   var headerDiv = Get('div_header') ;

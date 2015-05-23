@@ -1,0 +1,31 @@
+[mathjax]
+
+Like the <a href="">Science Shift Simulator</a>, this is a game that emerged as a subset of the <a href="http://aidansean.com/projects/?p=543">aDetector</a> project.  The player has to save events that match the criteria given, just like a trigger does in real life.  The results are then combined across all the players in a given team to determine the final score.  The scores can be combined across experiments to make a "discovery".  This is still in development, which will continue over the net week and months.
+
+<h3>Links</h3>
+
+<a href="http://www.aidansean.com/trigger">Live page</a>
+<a href="https://github.com/aidansean/trigger">GitHub repository</a>
+
+<h3>Overview</h3>
+
+This is another cooperative multiplayer game aimed at showing the public (especially high school pupils) how particle physics research actually takes place.  Any number of players can take part and they are split into "Team ATLAS" and "Team CMS".  The score of each team is determined by the performance of the players on each "shift" they take at the trigger, and the final scores are combined for the discovery of the Higgs boson.  There is also a "spy" mode where people can see the events as they are submitted.
+
+<h3>Challenges</h3>
+<dl>
+<dt><em>Challenge</em>: This project needs an attractive, fast, and realistic detector model.</dt>
+
+<dd><em>Solution</em>: Having already developed a decent detector model for the aDetector project, I simply used a two dimensional version for this project.  I then split the detector finely in \(\eta\) and \(\phi\) to make interactions between the particles and detector easier.  The aesthetics went through a few iterations before settling on the final design.  However further optimisations and aesthetic changes are anticipated as development continues. (Resolved, to be revisited.)</dd>
+<dt><em>Challenge</em>: This game puts a bit of a strain on my server.</dt>
+
+<dd><em>Solution</em>: My web space uses a shared server, so sometimes many HTTP requests from the same client looks like a Denial Of Service (DOS) attack, resulting in a throttling of the requests.  There are two main strategies to overcome this.  The first option is to bundle up several requests into one request, reducing the total number of requests, and the load on the server.  This solution has not been implemented yet.  The second option is to change the server settings.  I do not have access to these, but as development continues I intend to move to a different server that can handle so many very small requests. (To be revisited.)</dd>
+<dt><em>Challenge</em>: This game needs cross platform and cross device support.</dt>
+
+<dd><em>Solution</em>: This game was initially intended to be played with an iPad, but I did not have an iPad for testing.  On the day of the release of the game I had to tweak the settings so the response times were slower with respect to mouse events to make it easier to play on a tablet device.  These settings are trivially changed to allow multiple device support. (Resolved.)</dd>
+<dt><em>Challenge</em>: The game should be repsonsive to the inputs of the user.</dt>
+
+<dd><em>Solution</em>: Initially the game did not confirm success when a user clicked on the screen and this lead to confusion.  As a result I had to add a big green "tick" for success and a big red "cross" for failure to inform the user of the status of the event. (Resolved.)</dd>
+<dt><em>Challenge</em>: The game needed an animated histogram for the final result.</dt>
+
+<dd><em>Solution</em>: I've made histogras before, including histograms that update themselves on the aDetector project, but until now I had not animated a histogram.  This was a bit tricky as I had to call events which were using the <tt>this</tt> keyword, so the histogram object had to be stored as a global variable because, although I'd like to, I couldn't use <tt>this</tt> to refer to the histgoram.  Javascript can be frustating like that. (Resolved.)</dd>
+</dl>

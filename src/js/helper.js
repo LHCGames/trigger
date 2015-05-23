@@ -1,3 +1,6 @@
+// A series of trivial functions to save some typing.  The most common mathematcal
+// functions are aliased here to save typing.
+
 function random_color(lower){
   var r = Math.floor(lower + random()*(255-lower)) ;
   var g = Math.floor(lower + random()*(255-lower)) ;
@@ -6,7 +9,7 @@ function random_color(lower){
   return color ;
 }
 
-function increment_td(id){ Get(id).innerHTML =parseInt(Get(id).innerHTML) + 1 ; }
+//function increment_td(id){ Get(id).innerHTML = parseInt(Get(id).innerHTML) + 1 ; }
 
 function  sqrt(x){ return Math.sqrt(x) ; }
 function  acos(x){ return Math.acos(x) ; }
@@ -18,9 +21,15 @@ function atan2(y,x){ return Math.atan2(y,x) ; }
 function pow(x,n){ return Math.pow(x,n) ; }
 function random(){ return Math.random() ; }
 
+// Non standard function that Aidan really needs to check.
+function random_gaussian(sigma){ return sqrt(-2*sigma*log(random())) ; }
+
+// Get and Create HTML elements.  These can be removed if they cause confusion.  This is
+// merely my own preference.
 function Get(id){ return document.getElementById(id) ; }
 function Create(type){ return document.createElement(type) ; }
 
+// The normal AJAX stuff.  We can replace this with jQuery if we like.
 function GetXmlHttpObject(){
   if(window.XMLHttpRequest){
     // code for IE7+, Firefox, Chrome, Opera, Safari
@@ -32,5 +41,3 @@ function GetXmlHttpObject(){
   }
   return null ;
 }
-
-function random_gaussian(sigma){ return sqrt(-2*sigma*log(random())) ; }

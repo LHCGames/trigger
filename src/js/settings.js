@@ -1,6 +1,6 @@
-// Physical constants
-var SoL = 3e8     ; // Speed of light
-var CoE = 1.6e-19 ; // Charge of electron
+// Physical constants.
+var SoL = 3e8     ; // Speed of light.
+var CoE = 1.6e-19 ; // Charge of electron.
 var pi = Math.PI ;
 
 // Particle masses
@@ -11,17 +11,29 @@ var mPi = 0.137 ;
 var shifts_per_game      =  2 ;
 var collisions_per_shift = 20 ;
 
-// Control over the speed of the game
+// Control over the speed of the game.
 var collision_delay_min =  600 ;
 var collision_delay_max = 1000 ;
 var collision_delay = collision_delay_max ;
 
-// Colours
+// Colours.
 var neutral_color = '#000000' ;
 var ATLAS_color   = '#aa0000' ;
 var   CMS_color   = '#0000aa' ;
 
-// probabilities for each kind of collision
+var eventDisplay_fillColor = '#000000' ;
+
+var collision_matched_color    ='rgba(0,255,0,0.8)' ; 
+var collision_notMatched_color ='rgba(255,0,0,0.8)' ;
+
+
+// Settings for the spinning spokes.
+var nSpokes = 12 ;
+var spoke_rate = 0.002*2*pi ;
+var spoke_oddColor = '#335533' ;
+var spoke_evenColor  = '#003300' ;
+
+// probabilities for each kind of collision.
 var topology_names = ['H' , '4L' , '3L' , '2L' , '1L' , '0L'] ;
 var probability = [] ;
 var cumulative_probability = [] ;
@@ -64,45 +76,50 @@ var   CMS_sigma = 0 ;
 
 
 
-// Used for the heartbeat (eg for drawing animations)
+// Used for the heartbeat (eg for drawing animations).
 var delay = 50 ;
 
 var delay_animate_histogram = 50 ;
 
 // Dimensions of the detector and canvas
-// "S" refers to the detector
-// Sr is the maximal width of the detector in real life (eg cavern walls)
-// SR is the maximal width of the detector on the canvas
-// cw and ch and canvas width and height
+// "S" refers to the detector.
+// Sr is the maximal width of the detector in real life (eg cavern walls).
+// SR is the maximal width of the detector on the canvas.
+// cw and ch and canvas width and height.
 var Sr =  10 ;
 var SR = 375 ;
 var cw = 2*SR ;
 var ch = 2*SR ;
 
-// Boxes for the user to pick their team at the start of the game
+// Boxes for the user to pick their team at the start of the game.
 var ATLAS_box = [0.05*cw, 0.5*ch, 0.35*cw, 0.4*ch] ;
 var CMS_box   = [0.60*cw, 0.5*ch, 0.35*cw, 0.4*ch] ;
 
-// Number of slices in R and phi for the cells
+// Number of slices in R and phi for the cells.
 var NR   = 250 ;
 var NPhi = 250 ;
 
 var cellSizeR   =   Sr/NR   ;
 var cellSizePhi = 2*pi/NPhi ;
 
-// For debugging, show the cells on the canvas
+// For debugging, show the cells on the canvas.
 var underlay_cells = false ;
 var  overlay_cells = false ;
 
-// Functions used to map real coordinates to canvas coordinates
+// Functions used to map real coordinates to canvas coordinates.
 var xMax = Sr ;
 var yMax = Sr ;
 function X_from_x(x){ return SR + SR*x/xMax ; }
 function Y_from_y(y){ return SR + SR*y/yMax ; }
 
-// Settings for the jets, electrons, muons
-var jet_track_dphi = 0.05*pi ; // How much spread the jet is allowed to have per track
-var jet_track_pt_threshold = 30 ; // Minimum jet track pt.  The game is a bit buggy so this is irrelevant for now
+// Settings for the jets:
+// How much spread the jet is allowed to have per track
+var jet_track_dphi = 0.05*pi ;
+
+// Minimum jet track pt.  The game is a bit buggy so this is irrelevant for now
+var jet_track_pt_threshold = 30 ;
+
+// Colours for the particles:
 var track_color = 'rgb(200,200,200)' ;
 
 var electron_color = 'rgb(255,100,100)' ;

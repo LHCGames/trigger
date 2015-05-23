@@ -1,3 +1,27 @@
+// The detector is arranged in a hierarchy of components.
+// In real life the detector is split into subdetectors that interact with different
+// particles in different ways.  These are usually arranged in different radial ranges.
+// Subdetectors are arranged in layers in r.
+// Circular subdetectors are hard to make, so they are split into regular polygons.
+// (We work in circular coordinates, so use polygons with lots of sides!)
+// Each side of the polygon is a wedge.
+// Finally each subdetector is split into segments.
+//
+// The hierarchy looks something like this:
+// Detector
+//  +Subdetector
+//  +-+-Layer
+//  | +-+-Wedge
+//  | | +---Segment
+//  | | +---Segment
+//
+// We only really care about the segments, and everything else is arranged so that we can
+// recursively reach all segments from the top level.
+// There's probably a better way of arranging the detector, but this'll do for now.
+//
+// Subdetectors have characteristic responses to each particle type.  There's some real
+// physics involved in understanding these responses!
+
 function subdetector_object(name, r1, r2, spacing_r, spacing_phi, nLayers, nWedges, nSegments, strokeColor, fillRgb0, fillRgb1, particle_responses){
   this.name = name ;
   this.r1 = r1 ;
@@ -83,16 +107,27 @@ function subdetector_wedge_object(r1, r2, phi1, phi2, nSegments, fillRgb0, fillR
   }
 }
 function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, x4, y4, fillRgb0, fillRgb1, strokeColor, particle_responses){
+  // Segments have trapezium shapes.  This doesn't match onto polar coordinates exactly
+  // so we must make the number of segments large enough to make the mismatch small.
+
+  // Add this to the list of segments so that we can loop over all segments easily.
   segments.push(this) ;
+  
+  // Set the range in (r,phi).
   this.r1 = r1 ;
   this.r2 = r2 ;
   this.phi1 = phi1 ;
   this.phi2 = phi2 ;
+  
+  // Styles.
   this.fillRgb0 = fillRgb0 ;
   this.fillRgb1 = fillRgb1 ;
   this.strokeColor = strokeColor ;
+  
+  // Actual physics content!
   this.particle_responses = particle_responses ;
   
+  // The vertices in physical (x,y) space.
   this.x1 = x1 ;
   this.y1 = y1 ;
   this.x2 = x2 ;
@@ -102,6 +137,7 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
   this.x4 = x4 ;
   this.y4 = y4 ;
   
+  // Vertices in (X,Y) space on the canvas for drawing.
   this.X1 = X_from_x(this.x1) ;
   this.Y1 = Y_from_y(this.y1) ;
   this.X2 = X_from_x(this.x2) ;
@@ -111,27 +147,36 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
   this.X4 = X_from_x(this.x4) ;
   this.Y4 = Y_from_y(this.y4) ;
   
+  // Make this untouched
   this.is_touched = false ;
   
+  // The response will change on an event by event basis, and is the sum of the
+  // individual particle responses for that particular event.
   this.response = 0 ;
   
   this.activate_cells = function(){
+    // This is an expensive function that should only be called when the detector
+    // geometry is updated.  It adds the segment to the cells so that cells can turn the
+    // segments on quickly.  This is where we look in (r,phi) space instead of (x,y)
+    // space.
     for(var i=0 ; i<cells_linear.length ; i++){
-      var cell = cells_linear[i] ;
-      if(cell.  rMid<this.r1   ) continue ;
-      if(cell.  rMid>this.r2   ) continue ;
-      if(cell.phiMid<this.phi1 ) continue ;
-      if(cell.phiMid>this.phi2 ) continue ;
-      cell.add_segment(this) ;
+      if(cells_linear[i].  rMid<this.r1   ) continue ;
+      if(cells_linear[i].  rMid>this.r2   ) continue ;
+      if(cells_linear[i].phiMid<this.phi1 ) continue ;
+      if(cells_linear[i].phiMid>this.phi2 ) continue ;
+      cells_linear[i].add_segment(this) ;
     }
   }
   this.activate_cells() ;
   
   this.start_collision = function(){
+    // It's very important that we reset these values for a new event!
     this.is_touched = false ;
     this.response = 0 ;
   }
+  
   this.draw = function(context){
+    // Save the canvas, start a path, set the style and assemble the path.
     context.save() ;
     context.beginPath() ;
     context.fillStyle   = this.fillColor ;
@@ -144,18 +189,29 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
     context.closePath() ;
     context.stroke() ;
     
+    // Use the response to determine the colour of the segment.
+    // First put it in the range [0,1]
     if(this.response<0) this.response = 0 ;
     if(this.response>1) this.response = 1 ;
+    
+    // The colours are arranged in a simple linear gradient.
+    // This may be changed if it turns out a different gradient looks more "natural".
     var fr = Math.floor(this.fillRgb0[0]+this.response*(this.fillRgb1[0])) ;
     var fg = Math.floor(this.fillRgb0[1]+this.response*(this.fillRgb1[1])) ;
     var fb = Math.floor(this.fillRgb0[2]+this.response*(this.fillRgb1[2])) ;
+    
+    // Okay, enough rambling, let's just draw this thing
     context.fillStyle = 'rgb(' + fr + ',' + fg + ',' + fb + ')' ;
     context.fill() ;
     context.restore() ;
   }
   
   this.touch = function(particle_types){
+    // Touch the segment  I'm not sure this actually does anything, since we only check
+    // cells and not segments.
     this.is_touched = true ;
+    
+    // We can probably make a loop over particle names here.  This was a rush job.
     if(particle_types['electron']) this.response += this.particle_responses['electron'] ;
     if(particle_types['muon'    ]) this.response += this.particle_responses['muon'    ] ;
     if(particle_types['pion'    ]) this.response += this.particle_responses['pion'    ] ;
@@ -164,18 +220,26 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
 }
 
 function make_detector(){
-  var ptrkColor = 'rgb(255,255,255)' ;
-  var strkColor = 'rgb(  0,150,150)' ;
-  var ecalColor = 'rgb(200,  0,  0)' ;
-  var hcalColor = 'rgb(150,150,255)' ;
-  var mcalColor = 'rgb(  0,150,  0)' ;
+  // These are somewhat arbitrary arrangements of subdetectors that are vaguely inspired
+  // by general purpose detectors.  They are arranged in radii to look good on the
+  // canvas rather than to be realistic.  They're roughly on a logarithmic scale.
   
+  // Let's make a few subdetectors:
+  // Line colours first.
+  var ptrkColor = 'rgb(255,255,255)' ; // Pixel tracker.
+  var strkColor = 'rgb(  0,150,150)' ; // Silicon tracker (should really be first.)
+  var ecalColor = 'rgb(200,  0,  0)' ; // Electromagnetic calorimeter.
+  var hcalColor = 'rgb(150,150,255)' ; // Hadronic calorimeter.
+  var mcalColor = 'rgb(  0,150,  0)' ; // Muon chambers.  (In reality this a collection of many subdetectors.)
+  
+  // Now fill colours.  Each subdetector has a linear gradient between the pairs of stops.
   var ptrkRgb0 = [100,100,100] ; var ptrkRgb1 = [255,255,255] ;
   var strkRgb0 = [  0,150,150] ; var strkRgb1 = [  0,255,255] ;
   var ecalRgb0 = [100,  0,  0] ; var ecalRgb1 = [200,  0,  0] ;
   var hcalRgb0 = [ 50, 50,100] ; var hcalRgb1 = [150,150,255] ;
   var mcalRgb0 = [ 50,100, 50] ; var mcalRgb1 = [ 75,255, 75] ;
   
+  // Make the particle responses.  These are roughly inspired by physics knowledge.
   var ptrkResponses = [] ;
   ptrkResponses['pion'    ] = 1.0 ;
   ptrkResponses['muon'    ] = 1.0 ;
@@ -206,6 +270,7 @@ function make_detector(){
   mcalResponses['electron'] = 0.1 ;
   mcalResponses['photon'  ] = 0.1 ;
   
+  // Assemble the subdetectors.
   // function subdetector_object(name, r1, r2, spacing_r, spacing_phi, nLayers, nWedges, nSegments, fillColor, strokeColor)
   var ptrk = new subdetector_object('ptrk', 0.03*Sr, 0.12*Sr, 0.01*Sr, 0.001*2*pi, 6, 12,  3, ptrkColor, ptrkRgb0, ptrkRgb1, ptrkResponses) ;
   var strk = new subdetector_object('strk', 0.13*Sr, 0.27*Sr, 0.01*Sr, 0.002*2*pi, 5, 60,  1, strkColor, strkRgb0, strkRgb1, strkResponses) ;
@@ -213,6 +278,7 @@ function make_detector(){
   var hcal = new subdetector_object('hcal', 0.52*Sr, 0.64*Sr, 0.01*Sr, 0.005*2*pi, 2, 16,  4, hcalColor, hcalRgb0, hcalRgb1, hcalResponses) ;
   var mcal = new subdetector_object('mcal', 0.70*Sr, 0.98*Sr, 0.03*Sr, 0.003*2*pi, 4, 18,  10, mcalColor, mcalRgb0, mcalRgb1, mcalResponses) ;
   
+  // Put the subdetectors into the detector.
   subdetectors.push(ptrk) ;
   subdetectors.push(strk) ;
   subdetectors.push(ecal) ;

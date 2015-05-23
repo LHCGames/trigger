@@ -1,3 +1,7 @@
+// These objects are supposed to handle the particles (their path through the detector
+// etc) but some parts are broken.
+
+// These particles have tracks.
 function muon_object(charge, pt, phi){
   this.charge = charge ;
   this.pt  = pt  ;
@@ -26,8 +30,9 @@ function electron_object(charge, pt, phi){
     var Y = Y_from_y(xy[1]) ;
     draw_particle_head(context, X, Y, 5, electron_color, 'e') ;
   }
-  
 }
+
+// This class has tracks as members.
 function jet_object(pt, phi, color){
   this.pt  = pt  ;
   this.phi = phi ;
@@ -52,6 +57,8 @@ function jet_object(pt, phi, color){
     }
   }
 }
+
+
 function trackObject(charge, mass, pt, phi, color, particle_type){
   this.charge = charge ;
   this.mass = mass ;
@@ -63,16 +70,21 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
   this.path = [] ;
   
   this.make_path = function(){
+    // This should propagate a particle using the Lorentz force law for the magnetic
+    // fields in the detector.  It's a bit broken because the units are not handled
+    // properly.
+    
+    // Parameters based on the magnetic field, and particle mass.
     var k1 =  pow(SoL,2)*B1/(this.mass*1e9) ;
     var k2 = -pow(SoL,2)*B2/(this.mass*1e9) ;
     
-    // Express v in ms^-1
+    // Express v in ms^-1.
     var gv = this.pt/this.mass ;
     var vt = SoL*sqrt(gv*gv/(gv*gv+1)) ;
     var vx = vt*cos(this.phi) ;
     var vy = vt*sin(this.phi) ;
     
-    // Express t in s
+    // Express t in s.
     var dt = 1e-9 ;
     var x0 =  0 ;
     var y0 =  0 ;
@@ -85,7 +97,8 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
       var b2 = (vx*vx+vy*vy)/(SoL*SoL) ;
       var g  = 1/sqrt(1-b2) ;
       
-      // Careful!  We need to normalise vx and vy to make sure we don't violate the speed of light
+      // Careful!  We need to normalise vx and vy to make sure we don't violate the speed
+      // of light
       var dvx =  k*this.charge*vy*dt ;
       var dvy = -k*this.charge*vx*dt ;
       var vxTmp = vx + dvx ;
@@ -118,6 +131,8 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
       }
       this.path.push([x,y]) ;
     }
+    
+    // Now touch all the cells so that the segments can get turned on.
     for(var i=0 ; i<this.path.length ; i++){
       var xy = this.path[i] ;
       var x = xy[0] ;

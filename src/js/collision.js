@@ -1,12 +1,24 @@
+// Classes etc for handling the beam collisions.  A collision gives rise to jets, tracks,
+// and other particles (so far just electrons and muons.)
+
 var collision_object = function(){
+  // Particles in the collision.
   this.jets    = [] ;
   this.tracks  = [] ;
   this.leptons = [] ;
+  
+  // Used for triggers.  Should be refactored into an array or something.
   this.nMu = 0 ;
   this.nEl = 0 ;
+  
+  // Random number of jets.
   this.nJet = nJet_min + Math.floor(random()*(nJet_max-nJet_min)) ;
+  
+  // If the event is a Higgs event, give it a mass and set the flag.
   this.hMass = 0 ;
   this.isHiggs = false ;
+  
+  // Long winded functions to add leptons, that can be refactored quite simply, I'm sure.
   this.add_four_leptons  = function(){
     if(random()<0.5){
       this.nMu += 2 ;
@@ -63,12 +75,17 @@ var collision_object = function(){
       this.nEl += 1 ;
     }
   }
-  this.purge = function(){ // Minimise memory use
+  this.purge = function(){
+    // If we ever store events, this can be used to minimise memory use.
     this.jets    = [] ;
     this.tracks  = [] ;
     this.leptons = [] ;
   }
   this.make_particles = function(){
+    // Random assign particles their kinematic properties.  This should be changed to
+    // generate pseudorandom numbers using a seed instead, so that the spy mode sees
+    // exactly the same events as they players by passing a single number around.
+    // These variables should be stored in settings.js.
     for(var i=0 ; i<0 ; i++){
       var q = (random()<0.5) ? -1 : 1 ;
       var pt  = 10 + 90*random() ;
@@ -100,6 +117,7 @@ var collision_object = function(){
 }
 
 function make_collision(){
+  // Generate a random event, populating it with leptons.
   var r = random() ;
   if(r<cumulative_probability['H']){
     return make_Higgs_collision(126) ;
@@ -131,6 +149,7 @@ function make_collision(){
   }
 }
 function make_Higgs_collision(mass){
+  // This just sets the Higgs flag in the event.
   var ev = new collision_object() ;
   ev.isHiggs = true ;
   ev.add_four_leptons() ;
@@ -139,42 +158,66 @@ function make_Higgs_collision(mass){
 }
 
 function collision_thread(){
+  // Okay, now things get a bit tricky again.
   if(collision_counter>collisions_per_shift){
+    // This is needed to ensure we capture the final event of the shift properly.
+    // As usual, move variables to the settings.js so they are not hardcoded.
     window.setTimeout(end_shift, 50) ;
+    
+    // Reset the collision counter.
     collision_counter = 0 ;
     return ;
   }
   if(paused){
+    // Why do we reset the delay here?  I forget...
     collision_delay = collision_delay_max ;
   }
   else{
+    // Update the states.
     current_trigger.update_table() ;
     
+    // Update all the detector segments so they light up properly.
     current_collision = process_collision() ;
+    
+    // Draw things.  This is expensive!
     draw_eventDisplay(current_collision, context) ;
     
+    // Speed up the event as the run continues.
     var dDelay = 0.5*(collision_delay - collision_delay_min) ;
     collision_delay = collision_delay - dDelay ;
+    
+    // Reset the trigger flags.
     current_trigger.start_collision() ;
+    
+    // Increment the counter.
     collision_counter++ ;
+    
+    // Single player mode only.
     if(collision_counter<collisions_per_shift) Get('span_eventNumber').innerHTML = collision_counter ;
+    
+    update_score() ;
   }
-  update_score() ;
+  // Make the next collision.
   window.setTimeout(collision_thread, collision_delay) ;
 }
 
 function process_collision(){
+  // Reset all the cells and segments so we can analyse the event.
   for(var i=0 ; i<cells_linear.length ; i++){
     cells_linear[i].start_collision() ;
   }
   for(var i=0 ; i<segments.length ; i++){
     segments[i].start_collision() ;
   }
+  
+  // Now make a new collision and light up the detector.
   var ev = make_collision() ;
   ev.make_particles() ;
   for(var i=0 ; i<cells_linear.length ; i++){
     cells_linear[i].update_segments() ;
   }
+  
+  // Saving events- add an option to turn this off to reduce memory usage!
   collision_list.push(ev) ;
   return ev ;
 }
