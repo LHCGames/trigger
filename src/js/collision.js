@@ -104,14 +104,12 @@ var collision_object = function(){
     }
     var charge = (random()<0.5) ? -1 : 1 ;
     var phi = 0 ;
-    for(var i=0 ; i<this.nMu ; i++){
+    var lepton_names = [] ;
+    for(var i=0 ; i<this.nEl ; i++) lepton_names.push('electron') ;
+    for(var i=0 ; i<this.nMu ; i++) lepton_names.push('muon'    ) ;
+    for(var i=0 ; i<lepton_names.length ; i++){
       phi = (i%2==1) ? (0.5+random())*pi+phi : 2*pi*random() ;
-      this.leptons.push(new muon_object(charge, 30, phi)) ;
-      charge *= -1 ;
-    }
-    for(var i=0 ; i<this.nEl ; i++){
-      phi = (i%2==1) ? (0.5+random())*pi+phi : 2*pi*random() ;
-      this.leptons.push(new electron_object(charge, 30, phi)) ;
+      this.leptons.push(new particle_object(lepton_names[i], charge, 30, phi)) ;
       charge *= -1 ;
     }
   }

@@ -21,9 +21,6 @@ function particle_object(type, charge, pt, phi){
   }
 }
 
-function muon_object(charge, pt, phi){ return new particle_object('muon', charge, pt, phi) ; }
-function electron_object(charge, pt, phi){ return new particle_object('electron', charge, pt, phi) ; }
-
 // This class has tracks as members.
 function jet_object(pt, phi, color){
   this.pt  = pt  ;
