@@ -2,35 +2,38 @@
 // etc) but some parts are broken.
 
 // These particles have tracks.
-function muon_object(charge, pt, phi){
+
+function particle_settings_object(mass, color, symbol, lineWidth){
+  this.mass      = mass   ;
+  this.color     = color  ;
+  this.symbol    = symbol ;
+  this.lineWidth = lineWidth ;
+}
+var particle_settings = [] ;
+particle_settings['muon'    ] = new particle_settings_object(mMu, muon_color    , '\u03BC', 2) ;
+particle_settings['electron'] = new particle_settings_object(mEl, electron_color, 'e'     , 2) ;
+
+function particle_object(type, charge, pt, phi){
+  this.type   = type   ;
   this.charge = charge ;
-  this.pt  = pt  ;
-  this.phi = phi ;
-  this.track = new trackObject(this.charge, mMu, this.pt, this.phi, muon_color, 'muon') ;
-  this.track.lineWidth = muon_lineWidth ;
+  this.pt     = pt     ;
+  this.phi    = phi    ;
+  this.settings = particle_settings[this.type] ;
+  
+  this.track = new trackObject(this.charge, mMu, this.pt, this.phi, this.settings.color, this.type) ;
+  this.track.lineWidth = this.settings.lineWidth ;
   this.draw = function(context){
     this.track.draw(context) ;
     
     var xy = this.track.path[this.track.path.length-1] ;
     var X = X_from_x(xy[0]) ;
     var Y = Y_from_y(xy[1]) ;
-    draw_particle_head(context, X, Y, 5, muon_color, '\u03BC') ;
+    draw_particle_head(context, X, Y, 5, this.settings.color, this.settings.symbol) ;
   }
 }
-function electron_object(charge, pt, phi){
-  this.charge = charge ;
-  this.pt  = pt  ;
-  this.phi = phi ;
-  this.track = new trackObject(this.charge, mEl, this.pt, this.phi, electron_color, 'electron') ;
-  this.track.lineWidth = electron_lineWidth ;
-  this.draw = function(context){
-    this.track.draw(context) ;
-    var xy = this.track.path[this.track.path.length-1] ;
-    var X = X_from_x(xy[0]) ;
-    var Y = Y_from_y(xy[1]) ;
-    draw_particle_head(context, X, Y, 5, electron_color, 'e') ;
-  }
-}
+
+function muon_object(charge, pt, phi){ return new particle_object('muon', charge, pt, phi) ; }
+function electron_object(charge, pt, phi){ return new particle_object('electron', charge, pt, phi) ; }
 
 // This class has tracks as members.
 function jet_object(pt, phi, color){
