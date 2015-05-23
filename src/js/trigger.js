@@ -96,23 +96,19 @@ function trigger_object(nEl, nMu, description){
   }
   this.draw_topology_on_shift_start_screen = function(w, h){
     // This can probably be made a lot more elegant.  For now this will do.
-    if(nEl==2 && nMu==0){
-      draw_particle_head(context, 0.4*w, 0.55*h, 10, electron_color, 'e') ;
-      draw_particle_head(context, 0.6*w, 0.55*h, 10, electron_color, 'e') ;
+    var X1 = 0.4*w  ;
+    var X2 = 0.5*w  ;
+    var X3 = 0.4*w  ;
+    var Y  = 0.55*h ;
+    var leptons = [] ;
+    for(var i=0 ; i<nEl ; i++) leptons.push('electron') ;
+    for(var i=0 ; i<nMu ; i++) leptons.push('muon'    ) ;
+    if(leptons.length==1){
+      draw_particle_head(context, X2, Y, 10, particle_settings[leptons[0]].color, particle_settings[leptons[0]].symbol) ;
     }
-    else if(nEl==1 && nMu==0){
-      draw_particle_head(context, 0.5*w, 0.55*h, 10, electron_color, 'e') ;
-    }
-    else if(nEl==0 && nMu==2){
-      draw_particle_head(context, 0.4*w, 0.55*h, 10, muon_color, '\u03BC') ;
-      draw_particle_head(context, 0.6*w, 0.55*h, 10, muon_color, '\u03BC') ;
-    }
-    else if(nEl==0 && nMu==1){
-      draw_particle_head(context, 0.5*w, 0.55*h, 10, muon_color    , '\u03BC') ;
-    }
-    else if(nEl==1 && nMu==1){
-      draw_particle_head(context, 0.4*w, 0.55*h, 10, electron_color, 'e') ;
-      draw_particle_head(context, 0.6*w, 0.55*h, 10, muon_color    , '\u03BC') ;
+    else if(leptons.length=2){
+      draw_particle_head(context, X1, Y, 10, particle_settings[leptons[0]].color, particle_settings[leptons[0]].symbol) ;
+      draw_particle_head(context, X3, Y, 10, particle_settings[leptons[1]].color, particle_settings[leptons[1]].symbol) ;
     }
   }
 }

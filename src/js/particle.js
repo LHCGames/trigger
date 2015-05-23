@@ -2,17 +2,6 @@
 // etc) but some parts are broken.
 
 // These particles have tracks.
-
-function particle_settings_object(mass, color, symbol, lineWidth){
-  this.mass      = mass   ;
-  this.color     = color  ;
-  this.symbol    = symbol ;
-  this.lineWidth = lineWidth ;
-}
-var particle_settings = [] ;
-particle_settings['muon'    ] = new particle_settings_object(mMu, muon_color    , '\u03BC', 2) ;
-particle_settings['electron'] = new particle_settings_object(mEl, electron_color, 'e'     , 2) ;
-
 function particle_object(type, charge, pt, phi){
   this.type   = type   ;
   this.charge = charge ;

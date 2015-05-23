@@ -122,8 +122,19 @@ var jet_track_pt_threshold = 30 ;
 // Colours for the particles:
 var track_color = 'rgb(200,200,200)' ;
 
-var electron_color = 'rgb(255,100,100)' ;
-var electron_lineWidth = 2 ;
 
-var muon_color = 'rgb(  0,200,  0)' ;
-var muon_lineWidth = 2 ;
+function particle_settings_object(mass, color, symbol, lineWidth){
+  this.mass      = mass   ;
+  this.color     = color  ;
+  this.symbol    = symbol ;
+  this.lineWidth = lineWidth ;
+}
+var particle_settings = [] ;
+particle_settings['muon'    ] = new particle_settings_object(mMu, 'rgb(  0,200,  0)', '\u03BC', 2) ;
+particle_settings['electron'] = new particle_settings_object(mEl, 'rgb(255,100,100)', 'e'     , 2) ;
+
+//var electron_color = 'rgb(255,100,100)' ;
+//var electron_lineWidth = 2 ;
+
+//var muon_color = 'rgb(  0,200,  0)' ;
+//var muon_lineWidth = 2 ;
