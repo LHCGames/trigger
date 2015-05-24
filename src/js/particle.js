@@ -188,7 +188,7 @@ function draw_particle_head(context, X, Y, scale, color, text){
   context.save() ;
   context.beginPath() ;
   context.arc(X, Y, 5*scale, 0, 2*pi, true) ;
-  context.fillStyle = 'rgb(200, 0, 0)' ;
+  context.fillStyle = color ;
   context.shadowBlur = 40;
   context.shadowColor = color ;
   context.fill() ;
@@ -197,7 +197,5 @@ function draw_particle_head(context, X, Y, scale, color, text){
   context.textBaseline = 'middle' ;
   context.textAlign    = 'center' ;
   context.fillText(text, X, Y) ;
-  context.strokeColor = 'rgb(0,0,0)' ;
-  context.strokeText(text, X, Y) ;
   context.restore() ;
 }
