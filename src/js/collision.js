@@ -8,11 +8,6 @@ var collision_object = function(){
   this.leptons = [] ;
   
   this.topology = [] ;
-  
-  // Used for triggers.  Should be refactored into an array or something.
-  this.nMu = 0 ;
-  this.nEl = 0 ;
-  
   this.seed = floor(1e9*random()) ;
   
   // Random number of jets.
@@ -50,7 +45,13 @@ var collision_object = function(){
     }
     var charge = (random()<0.5) ? -1 : 1 ;
     var phi = 0 ;
+<<<<<<< HEAD
     for(var i=0 ; i<topology.length ; i++){
+=======
+    var lepton_names = [] ;
+    for(var i=0  ; i<this.topology.length ; i++) lepton_names.push(this.topology[i]) ;
+    for(var i=0 ; i<lepton_names.length ; i++){
+>>>>>>> origin/master
       phi = (i%2==1) ? (0.5+random())*pi+phi : 2*pi*random() ;
       this.leptons.push(new particle_object(topology[i], charge, 30, phi)) ;
       charge *= -1 ;
