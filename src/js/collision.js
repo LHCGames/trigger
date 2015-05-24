@@ -8,11 +8,6 @@ var collision_object = function(){
   this.leptons = [] ;
   
   this.topology = [] ;
-  
-  // Used for triggers.  Should be refactored into an array or something.
-  this.nMu = 0 ;
-  this.nEl = 0 ;
-  
   this.seed = floor(1e9*random()) ;
   
   // Random number of jets.
@@ -51,8 +46,7 @@ var collision_object = function(){
     var charge = (random()<0.5) ? -1 : 1 ;
     var phi = 0 ;
     var lepton_names = [] ;
-    for(var i=0 ; i<this.nEl ; i++) lepton_names.push('electron') ;
-    for(var i=0 ; i<this.nMu ; i++) lepton_names.push('muon'    ) ;
+    for(var i=0  ; i<this.topology.length ; i++) lepton_names.push(this.topology[i]) ;
     for(var i=0 ; i<lepton_names.length ; i++){
       phi = (i%2==1) ? (0.5+random())*pi+phi : 2*pi*random() ;
       this.leptons.push(new particle_object(lepton_names[i], charge, 30, phi)) ;
@@ -96,7 +90,6 @@ var multi_lepton_topology = function() {
     }
 
   this.getLeptons = function() {
-  console.log("hello");
     this.bosons = ["n","w","z"];
     this.boson = bosons[Math.floor(Math.random() * bosons.length)];
     decay_boson(boson);
@@ -124,7 +117,7 @@ function make_Higgs_collision(mass){
   // This just sets the Higgs flag in the event.
   var ev = new collision_object() ;
   ev.isHiggs = true ;
-  ev.topology = Higgs4L_topologies[Math.floor(Math.random * Higgs4L_topologies.length)] ;
+  ev.topology = Higgs4L_topologies[Math.floor(Math.random() * Higgs4L_topologies.length)] ;
   ev.hMass = mass ;
   return ev ;
 }
