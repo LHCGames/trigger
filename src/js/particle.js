@@ -8,6 +8,7 @@ function particle_object(type, charge, pt, phi){
   this.pt     = pt     ;
   this.phi    = phi    ;
   this.settings = particle_settings[this.type] ;
+  this.charge = this.settings.charge ; // Set charge to 0 for photons.
   
   this.track = new trackObject(this.charge, mMu, this.pt, this.phi, this.settings.color, this.type) ;
   this.track.lineWidth = this.settings.lineWidth ;
@@ -58,6 +59,11 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
   this.lineWidth = 1 ;
   this.path = [] ;
   
+  this.specialParticle = false ;
+  for(var j=0 ; j<particle_names.length ; j++){
+    if(particle_names[j]==this.particle_type) this.specialParticle = true ;
+  }
+  
   this.make_path = function(){
     // This should propagate a particle using the Lorentz force law for the magnetic
     // fields in the detector.  It's a bit broken because the units are not handled
@@ -104,8 +110,8 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
         sign = this.charge ;
         k = k1 ;
       }
-      if(r>0.51*Sr && this.particle_type=='electron'){
-        break ;
+      if(this.specialParticle){
+        if(r>particle_settings[this.particle_type].rCutoff) break ;
       }
       if(r>0.2*Sr){
         sign = -this.charge ;

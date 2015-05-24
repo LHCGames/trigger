@@ -89,7 +89,7 @@ function trigger_object(topology, description, name){
     update_stats() ;
   }
   this.draw_topology_on_shift_start_screen = function(w, h){
-    var Y  = 0.55*h ;
+    var Y  = 0.5*h ;
     var dX = 0.2*w  ;
     var DX = (this.topology.length-1)*dX ;
     

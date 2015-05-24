@@ -8,6 +8,12 @@ function draw_eventDisplay(collision, context){
   // Clear the canvas so we start with a clean black background.
   clear_canvas(context) ;
   
+  // Draw CMS image.
+  context.drawImage(Get('img_CMSPhoto'),  0, 0) ;
+  
+  context.fillStyle = 'rgba(0,0,0,0.2)' ;
+  context.fillRect(0,0,cw,ch) ;
+  
   // For debugging purposes, we can draw a mesh of cells.
   if(underlay_cells) draw_cells(context) ;
   
@@ -141,7 +147,7 @@ function draw_game_start_screen(){
   context.strokeStyle = '#ffffff' ;
   context.lineWidth = 5 ;
   
-  context.fillStyle = '#ffffff' ;
+  context.fillStyle = text_color ;
   context.textAlign = 'center' ;
   context.font = '70px arial' ;
   context.fillText('Welcome to the'   , 0.5*w, 0.15*h) ;
@@ -177,7 +183,7 @@ function draw_experiment_box(context, box, name, color, image_name){
   context.strokeRect(x, y, w, h) ;
   
   // Hard coded values!  These should be changed.
-  context.fillStyle = '#ffffff' ;
+  context.fillStyle = 'white'
   context.fillText('Team', x+0.5*w, y+50) ;
   context.fillText(name  , x+0.5*w, y+100) ;
   context.drawImage(Get(image_name),  x+6, y+h-173) ;
@@ -196,19 +202,19 @@ function draw_shift_start_screen(){
   draw_spokes() ;
   
   // Some more hard coded stuff that should probably be cleaned up.
-  context.fillStyle = '#ffffff' ;
+  context.fillStyle = text_color ;
   context.textAlign = 'center' ;
   context.font = '80px arial' ;
   context.fillText('NEW SHIFT!', 0.5*w, 0.15*h) ;
   
   context.font = '40px arial' ;
-  context.fillText('Fire the trigger (click) for', 0.5*w,  0.38*h) ;
-  context.fillText('events that contain:', 0.5*w, 0.45*h) ;
+  context.fillText('Fire the trigger (click) for', 0.5*w,  0.33*h) ;
+  context.fillText('events that contain:', 0.5*w, 0.4*h) ;
   
   // Better function name for this?
   current_trigger.draw_topology_on_shift_start_screen(w, h) ;
   
-  context.fillText(current_trigger.description, 0.5*w, 0.70*h) ;
+  context.fillText(current_trigger.description, 0.5*w, 0.65*h) ;
   
   context.fillText('Click to begin.', 0.5*w, 0.9*h) ;
   
@@ -230,7 +236,7 @@ function draw_shift_end_screen(){
   // and we can play around with different statistics etc.
   // Consider adding some "friendly" graphics to say things like "Good job!" with a
   // smiley person.
-  context.fillStyle = '#ffffff' ;
+  context.fillStyle = text_color ;
   context.textAlign = 'center' ;
   context.font = '80px arial' ;
   context.fillText('Shift summary:', 0.5*w, 0.15*h) ;
