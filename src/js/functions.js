@@ -133,7 +133,7 @@ function start(){
   current_trigger = random_trigger() ;
   current_trigger.update_text() ;
   
-  window.setTimeout(begin, 1000) ;
+  window.setTimeout(begin, 10) ;
 }
 
 function begin(){
@@ -162,20 +162,20 @@ function pick_team(evt){
   var CMS_click   = (x>  CMS_box[0] && x<  CMS_box[0]+  CMS_box[2] && y>  CMS_box[1] && y<  CMS_box[1]+  CMS_box[3]) ;
   
   // Then pick a team based on the name.  This was done in a rush, so refactor etc.
+  var team_color = neutral_color ;
   if(ATLAS_click){
     team_name = 'ATLAS' ;
-    apply_experiment_style(ATLAS_color) ;
-    Get('div_teamname').innerHTML = 'Team ATLAS' ;
+    team_color = ATLAS_color ;
     game_state = 'shift_start' ;
-    document.body.style.background = ATLAS_color ;
   }
   if(CMS_click){
     team_name = 'CMS' ;
-    apply_experiment_style(CMS_color) ;
-    Get('div_teamname').innerHTML = 'Team CMS' ;
+    team_color = CMS_color ;
     game_state = 'shift_start' ;
-    document.body.style.background = CMS_color ;
   }
+  apply_experiment_style(team_color) ;
+  Get('div_teamname').innerHTML = 'Team ' + team_name ;
+  document.body.style.background = team_color ;
 }
 
 function eventDisplayClick(evt){

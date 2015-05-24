@@ -7,7 +7,8 @@ $mySQL_connection = mysql_connect('localhost', $mysql_username, $mysql_password)
 mysql_select_db($mysql_database) or die('Could not select database') ;
 
 if(isset($_GET['task'])){
-  if($_GET['task']=='add_event'){ // format: ?task=add_event&team=ATLAS&events=nMu,nEl,trigger;nMu,nEl,trigger
+  if($_GET['task']=='add_event'){
+    // format: ?task=add_event&team=ATLAS&events=nMu,nEl,trigger;nMu,nEl,trigger
     $team = mysql_real_escape_string($_GET['team']) ;
     $events_raw = $_GET['events'] ;
     $events_array = explode(';',$events_raw) ;
@@ -19,6 +20,14 @@ if(isset($_GET['task'])){
       $query = 'INSERT INTO trigger_events (team, nMu, nEl, triggerName, seen) VALUES ("' . $team . '",' . $nMu . ',' . $nEl . ',"' . $trigger . '", 0)' ;
       mysql_query($query) or die(mysql_error()) ;
     }
+  }
+  if($_GET['task']=='add_collisions'){
+    // format: ?task=add_event&team=ATLAS&trigger=ee&seeds=seed;seed;seed
+    $team    = mysql_real_escape_string($_GET['team'   ]) ;
+    $trigger = mysql_real_escape_string($_GET['trigger']) ;
+    $seeds   = mysql_real_escape_string($_GET['seeds'  ]) ;
+    $query = 'INSERT INTO trigger_collisions (team, trigger, seeds, seen) VALUES ("' . $team . '",' . $$trigger . '", "' . $seeds . '"0)' ;
+    mysql_query($query) or die(mysql_error()) ;
   }
   else if($_GET['task']=='get_event'){
     $team = mysql_real_escape_string($_GET['team']) ;

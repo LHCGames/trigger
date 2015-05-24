@@ -7,6 +7,8 @@ var collision_object = function(){
   this.tracks  = [] ;
   this.leptons = [] ;
   
+  this.topology = [] ;
+  
   // Used for triggers.  Should be refactored into an array or something.
   this.nMu = 0 ;
   this.nEl = 0 ;
@@ -23,57 +25,83 @@ var collision_object = function(){
   this.add_four_leptons  = function(){
     if(random()<0.5){
       this.nMu += 2 ;
+      this.topology.push('muon') ;
+      this.topology.push('muon') ;
       if(random()<0.5){
         this.nMu += 2;
+        this.topology.push('muon') ;
+        this.topology.push('muon') ;
       }
       else{
         this.nEl += 2 ;
+        this.topology.push('electron') ;
+        this.topology.push('electron') ;
       }
     }
     else{
       this.nEl += 2
+      this.topology.push('electron') ;
+      this.topology.push('electron') ;
       if(random()<0.5){
         this.nMu += 2 ;
+        this.topology.push('muon') ;
+        this.topology.push('muon') ;
       }
       else{
         this.nEl += 2 ;
+        this.topology.push('electron') ;
+        this.topology.push('electron') ;
       }
     }
   }
   this.add_three_leptons = function(){
     if(random()<0.5){
       this.nMu += 2 ;
+      this.topology.push('muon') ;
+      this.topology.push('muon') ;
       if(random()<0.5){
         this.nMu += 1;
+        this.topology.push('muon') ;
       }
       else{
         this.nEl += 1 ;
+        this.topology.push('electron') ;
       }
     }
     else{
       this.nEl += 2
+      this.topology.push('electron') ;
+      this.topology.push('electron') ;
       if(random()<0.5){
         this.nMu += 1 ;
+        this.topology.push('muon') ;
       }
       else{
         this.nEl += 1 ;
+        this.topology.push('electron') ;
       }
     }
   }
   this.add_two_leptons   = function(){
     if(random()<0.5){
       this.nMu += 2 ;
+      this.topology.push('muon') ;
+      this.topology.push('muon') ;
     }
     else{
       this.nEl += 2
+      this.topology.push('electron') ;
+      this.topology.push('electron') ;
     }
   }
   this.add_one_leptons   = function(){
     if(random()<0.5){
       this.nMu += 1 ;
+      this.topology.push('muon') ;
     }
     else{
       this.nEl += 1 ;
+      this.topology.push('electron') ;
     }
   }
   this.purge = function(){
