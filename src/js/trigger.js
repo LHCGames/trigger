@@ -105,6 +105,7 @@ var  e_trigger = new trigger_object(['electron'           ] , 'at least one elec
 var mm_trigger = new trigger_object(['muon','muon'        ] , 'at least two muons.'                , 'mm') ;
 var  m_trigger = new trigger_object(['muon'               ] , 'at least one muon.'                 , 'm' ) ;
 var em_trigger = new trigger_object(['electron','muon'    ] , 'at least one electron and one muon.', 'em') ;
+var et_trigger = new trigger_object(['tau','muon'    ] , 'at least one tau and one muon.', 'et') ;
 
 var all_triggers = [] ;
 all_triggers.push(ee_trigger) ;
@@ -112,6 +113,7 @@ all_triggers.push( e_trigger) ;
 all_triggers.push(mm_trigger) ;
 all_triggers.push( m_trigger) ;
 all_triggers.push(em_trigger) ;
+all_triggers.push(et_trigger) ;
 
 // function to get a random trigger.  This should be edited to be tweakable in the
 // settings, based on difficulty, age range etc

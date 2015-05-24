@@ -159,7 +159,7 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
       var r = sqrt( pow(xy[0],2) + pow(xy[1],2) ) ;
       if(r<rTmp) break ;
       rTmp = r ;
-      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron') break ;
+      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron'  && this.particle_type!='tau') break ;
       context.lineTo(X_from_x(xy[0]),Y_from_y(xy[1])) ;
     }
     context.stroke() ;
@@ -174,7 +174,7 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
       var r = sqrt( pow(xy[0],2) + pow(xy[1],2) ) ;
       if(r<rTmp) break ;
       rTmp = r ;
-      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron') break ;
+      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron' && this.particle_type!='tau') break ;
       context.lineTo(X_from_x(xy[0]),Y_from_y(xy[1])) ;
     }
     context.stroke() ;

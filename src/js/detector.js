@@ -216,6 +216,7 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
     if(particle_types['muon'    ]) this.response += this.particle_responses['muon'    ] ;
     if(particle_types['pion'    ]) this.response += this.particle_responses['pion'    ] ;
     if(particle_types['photon'  ]) this.response += this.particle_responses['photon'  ] ;
+    if(particle_types['tau'     ]) this.response += this.particle_responses['tau'     ] ;
   }
 }
 
@@ -245,30 +246,35 @@ function make_detector(){
   ptrkResponses['muon'    ] = 1.0 ;
   ptrkResponses['electron'] = 1.0 ;
   ptrkResponses['photon'  ] = 0.0 ;
+  ptrkResponses['tau'  ] = 1.0 ;
   
   var strkResponses = [] ;
   strkResponses['pion'    ] = 1.0 ;
   strkResponses['muon'    ] = 1.0 ;
   strkResponses['electron'] = 1.0 ;
   strkResponses['photon'  ] = 0.0 ;
+  strkResponses['tau'  ] = 1.0 ;
   
   var ecalResponses = [] ;
   ecalResponses['pion'    ] = 0.1 ;
   ecalResponses['muon'    ] = 0.1 ;
   ecalResponses['electron'] = 1.0 ;
   ecalResponses['photon'  ] = 1.0 ;
+  ecalResponses['tau'  ] = 0.3 ;
   
   var hcalResponses = [] ;
   hcalResponses['pion'    ] = 8.4 ;
   hcalResponses['muon'    ] = 0.1 ;
   hcalResponses['electron'] = 0.3 ;
   hcalResponses['photon'  ] = 0.3 ;
+  hcalResponses['tau'  ] = 0.8 ;
   
   var mcalResponses = [] ;
   mcalResponses['pion'    ] = 0.1 ;
   mcalResponses['muon'    ] = 1.0 ;
   mcalResponses['electron'] = 0.1 ;
   mcalResponses['photon'  ] = 0.1 ;
+  mcalResponses['tau'  ] = 0.1 ;
   
   // Assemble the subdetectors.
   // function subdetector_object(name, r1, r2, spacing_r, spacing_phi, nLayers, nWedges, nSegments, fillColor, strokeColor)

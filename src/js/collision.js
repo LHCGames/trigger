@@ -50,12 +50,9 @@ var collision_object = function(){
     }
     var charge = (random()<0.5) ? -1 : 1 ;
     var phi = 0 ;
-    var lepton_names = [] ;
-    for(var i=0 ; i<this.nEl ; i++) lepton_names.push('electron') ;
-    for(var i=0 ; i<this.nMu ; i++) lepton_names.push('muon'    ) ;
-    for(var i=0 ; i<lepton_names.length ; i++){
+    for(var i=0 ; i<topology.length ; i++){
       phi = (i%2==1) ? (0.5+random())*pi+phi : 2*pi*random() ;
-      this.leptons.push(new particle_object(lepton_names[i], charge, 30, phi)) ;
+      this.leptons.push(new particle_object(topology[i], charge, 30, phi)) ;
       charge *= -1 ;
     }
   }
@@ -68,20 +65,20 @@ var multi_lepton_topology = function() {
     this.part = part;
     this.prob_tot = 0;
     this.particle_array = [];
-    for (i=0;i<this.part.length;i++) {
+    for(var i=0;i<this.part.length;i++) {
       this.name = this.part[i][0];
       this.prob = this.part[i][1];
       this.prob_tot += this.prob;
-      for (j=0;j<this.prob_tot;j++) {
-      this.particle_array = this.particle_array.concat(name);
+      for (var j=0;j<this.prob;j++) {
+        this.particle_array = this.particle_array.concat(name);
       } 
     }
     this.rnd = Math.floor(Math.random()*prob_tot);
-    this.particle_array = this.particle_array[rnd];
+    this.particle_array = this.particle_array[this.rnd];
     this.split = this.particle_array.split(",");
-    for (k=0;k<this.split.length;k++) {
-       topology.push(this.split[k]);
-    } 
+    for(var k=0;k<this.split.length;k++) {
+       this.topology.push(this.split[k]);
+    }
     this.particle_array = [];
   }
 
@@ -96,7 +93,6 @@ var multi_lepton_topology = function() {
     }
 
   this.getLeptons = function() {
-  console.log("hello");
     this.bosons = ["n","w","z"];
     this.boson = bosons[Math.floor(Math.random() * bosons.length)];
     decay_boson(boson);
@@ -105,7 +101,7 @@ var multi_lepton_topology = function() {
   this.topology = [];
   this.getLeptons();
   this.getLeptons();
-  return topology;
+  return this.topology;
 }
 
 function make_collision(){
@@ -124,7 +120,7 @@ function make_Higgs_collision(mass){
   // This just sets the Higgs flag in the event.
   var ev = new collision_object() ;
   ev.isHiggs = true ;
-  ev.topology = Higgs4L_topologies[Math.floor(Math.random * Higgs4L_topologies.length)] ;
+  ev.topology = Higgs4L_topologies[Math.floor(Math.random() * Higgs4L_topologies.length)] ;
   ev.hMass = mass ;
   return ev ;
 }

@@ -7,6 +7,7 @@ var pi = Math.PI ;
 var mEl = 0.10005 ;
 var mMu = 0.105 ;
 var mPi = 0.137 ;
+var mTau = 1.777;
 
 var shifts_per_game      =  2 ;
 var collisions_per_shift = 20 ;
@@ -127,8 +128,9 @@ function particle_settings_object(mass, color, symbol, lineWidth){
   this.lineWidth = lineWidth ;
 }
 var particle_settings = [] ;
-particle_settings['muon'    ] = new particle_settings_object(mMu, 'rgb(  0,200,  0)', '\u03BC', 2) ;
-particle_settings['electron'] = new particle_settings_object(mEl, 'rgb(255,100,100)', 'e'     , 2) ;
+particle_settings['muon'    ] = new particle_settings_object(mMu , 'rgb(  0,200,  0)', '\u03BC', 2) ;
+particle_settings['electron'] = new particle_settings_object(mEl , 'rgb(255,100,100)', 'e'     , 2) ;
+particle_settings['tau'     ] = new particle_settings_object(mTau, 'rgb(100,  0,100)', '\u03C4', 2) ;
 
 // Signal topologies
 var Higgs4L_topologies = [
@@ -145,12 +147,16 @@ var signal_topologies = Higgs4L_topologies ;
 //particle topology
 var z_particles = 
 [
+ [["tau","tau"],1],
  [["electron","electron"],1],
- [["muon","muon"],1]
+ [["muon","muon"],1] 
 ];
 
 var w_particles = 
 [
  [["electron"],1],
- [["muon"],1]
+ [["muon"],1],
+ [["tau"],1]
 ];
+
+
