@@ -105,7 +105,9 @@ var  e_trigger = new trigger_object(['electron'           ] , 'at least one elec
 var mm_trigger = new trigger_object(['muon','muon'        ] , 'at least two muons.'                , 'mm') ;
 var  m_trigger = new trigger_object(['muon'               ] , 'at least one muon.'                 , 'm' ) ;
 var em_trigger = new trigger_object(['electron','muon'    ] , 'at least one electron and one muon.', 'em') ;
-var et_trigger = new trigger_object(['tau','muon'    ] , 'at least one tau and one muon.', 'et') ;
+var et_trigger = new trigger_object(['tau','muon'         ] , 'at least one tau and one muon.'     , 'et') ;
+var et_trigger = new trigger_object(['tau','electron'     ] , 'at least one tau and one electron.' , 'mt') ;
+var et_trigger = new trigger_object(['tau','tau'          ] , 'at least two taus.'                 , 'tt') ;
 
 var all_triggers = [] ;
 all_triggers.push(ee_trigger) ;
