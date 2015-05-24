@@ -45,9 +45,15 @@ var collision_object = function(){
     }
     var charge = (random()<0.5) ? -1 : 1 ;
     var phi = 0 ;
-    for(var i=0 ; i<this.topology.length ; i++){
+<<<<<<< HEAD
+    for(var i=0 ; i<topology.length ; i++){
+=======
+    var lepton_names = [] ;
+    for(var i=0  ; i<this.topology.length ; i++) lepton_names.push(this.topology[i]) ;
+    for(var i=0 ; i<lepton_names.length ; i++){
+>>>>>>> origin/master
       phi = (i%2==1) ? (0.5+random())*pi+phi : 2*pi*random() ;
-      this.leptons.push(new particle_object(this.topology[i], charge, 30, phi)) ;
+      this.leptons.push(new particle_object(topology[i], charge, 30, phi)) ;
       charge *= -1 ;
     }
   }
@@ -115,7 +121,7 @@ function make_Higgs_collision(mass){
   // This just sets the Higgs flag in the event.
   var ev = new collision_object() ;
   ev.isHiggs = true ;
-  ev.topology = signal_topologies[Math.floor(Math.random() * signal_topologies.length)] ;
+  ev.topology = Higgs4L_topologies[Math.floor(Math.random() * Higgs4L_topologies.length)] ;
   ev.hMass = mass ;
   return ev ;
 }

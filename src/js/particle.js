@@ -8,7 +8,6 @@ function particle_object(type, charge, pt, phi){
   this.pt     = pt     ;
   this.phi    = phi    ;
   this.settings = particle_settings[this.type] ;
-  this.charge = this.settings.charge ; // Set charge to 0 for photons.
   
   this.track = new trackObject(this.charge, mMu, this.pt, this.phi, this.settings.color, this.type) ;
   this.track.lineWidth = this.settings.lineWidth ;
@@ -59,11 +58,6 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
   this.lineWidth = 1 ;
   this.path = [] ;
   
-  this.specialParticle = false ;
-  for(var j=0 ; j<particle_names.length ; j++){
-    if(particle_names[j]==this.particle_type) this.specialParticle = true ;
-  }
-  
   this.make_path = function(){
     // This should propagate a particle using the Lorentz force law for the magnetic
     // fields in the detector.  It's a bit broken because the units are not handled
@@ -110,10 +104,9 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
         sign = this.charge ;
         k = k1 ;
       }
-      if(this.specialParticle){
-        if(r>particle_settings[this.particle_type].rCutoff) break ;
+      if(r>0.51*Sr && this.particle_type=='electron'){
+        break ;
       }
-      
       if(r>0.2*Sr){
         sign = -this.charge ;
         k = k2 ;
@@ -154,23 +147,19 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
   this.make_path() ;
   
   this.draw = function(context){
-    if(this.particle_type=='photon') return ;
-  
     context.save() ;
     context.beginPath() ;
     
     context.lineWidth = 2*this.lineWidth ;
     context.strokeStyle = 'rgb(255,255,255)' ;
     context.moveTo(X_from_x(this.path[0][0]),Y_from_y(this.path[0][1])) ;
-    
     var rTmp = 0 ;
     for(var i=0 ; i<this.path.length ; i++){
       var xy = this.path[i] ;
-      var r = sqrt(pow(xy[0],2) + pow(xy[1],2)) ;
+      var r = sqrt( pow(xy[0],2) + pow(xy[1],2) ) ;
       if(r<rTmp) break ;
       rTmp = r ;
-      
-      if(r>0.3*Sr && this.specialParticle==false) break ;
+      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron'  && this.particle_type!='tau') break ;
       context.lineTo(X_from_x(xy[0]),Y_from_y(xy[1])) ;
     }
     context.stroke() ;
@@ -178,6 +167,8 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
     context.beginPath() ;
     context.lineWidth = this.lineWidth ;
     context.strokeStyle = this.color ;
+    context.shadowBlur = 10;
+    context.shadowColor = this.color;
     context.moveTo(X_from_x(this.path[0][0]),Y_from_y(this.path[0][1])) ;
     rTmp = 0 ;
     for(var i=0 ; i<this.path.length ; i++){
@@ -185,7 +176,7 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
       var r = sqrt( pow(xy[0],2) + pow(xy[1],2) ) ;
       if(r<rTmp) break ;
       rTmp = r ;
-      if(r>0.3*Sr && this.specialParticle==false) break ;
+      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron' && this.particle_type!='tau') break ;
       context.lineTo(X_from_x(xy[0]),Y_from_y(xy[1])) ;
     }
     context.stroke() ;
@@ -197,12 +188,16 @@ function draw_particle_head(context, X, Y, scale, color, text){
   context.save() ;
   context.beginPath() ;
   context.arc(X, Y, 5*scale, 0, 2*pi, true) ;
-  context.fillStyle = color ;
+  context.fillStyle = 'rgb(200, 0, 0)' ;
+  context.shadowBlur = 40;
+  context.shadowColor = color ;
   context.fill() ;
   context.fillStyle = 'rgb(255,255,255)' ;
   context.font = (6*scale) + 'px arial' ;
   context.textBaseline = 'middle' ;
   context.textAlign    = 'center' ;
   context.fillText(text, X, Y) ;
+  context.strokeColor = 'rgb(0,0,0)' ;
+  context.strokeText(text, X, Y) ;
   context.restore() ;
 }
