@@ -57,47 +57,19 @@ function freeze(){
 // The following functions are called using the window.setTimeout method to make it look
 // like things are actually happening.  Very low tech and a bit cheesy, but it got some
 // laughs on the day!
-// We should refactor this to something more streamlined.
-function add_combo_row_1(){
+function add_combo_row(text){
   var tr = Create('tr') ;
   var th = Create('th') ;
   th.className = 'combo' ;
-  th.innerHTML = 'Step 1) Calibrating leptons' ;
+  th.innerHTML = text ;
   tr.appendChild(th) ;
   Get('tbody_combo').appendChild(tr) ;
 }
-function add_combo_row_2(){
-  var tr = Create('tr') ;
-  var th = Create('th') ;
-  th.className = 'combo' ;
-  th.innerHTML = 'Step 2) Asking difficult questions' ;
-  tr.appendChild(th) ;
-  Get('tbody_combo').appendChild(tr) ;
-}
-function add_combo_row_3(){
-  var tr = Create('tr') ;
-  var th = Create('th') ;
-  th.className = 'combo' ;
-  th.innerHTML = 'Step 3) Making coffee' ;
-  tr.appendChild(th) ;
-  Get('tbody_combo').appendChild(tr) ;
-}
-function add_combo_row_4(){
-  var tr = Create('tr') ;
-  var th = Create('th') ;
-  th.className = 'combo' ;
-  th.innerHTML = 'Step 4) Talking to professors' ;
-  tr.appendChild(th) ;
-  Get('tbody_combo').appendChild(tr) ;
-}
-function add_combo_row_5(){
-  var tr = Create('tr') ;
-  var th = Create('th') ;
-  th.className = 'combo' ;
-  th.innerHTML = 'Step 5) Avoiding the press' ;
-  tr.appendChild(th) ;
-  Get('tbody_combo').appendChild(tr) ;
-}
+function add_combo_row_1(){ add_combo_row('Step 1) Calibrating leptons') ; }
+function add_combo_row_2(){ add_combo_row('Step 2) Asking difficult questions') ; }
+function add_combo_row_3(){ add_combo_row('Step 3) Making coffee') ; }
+function add_combo_row_4(){ add_combo_row('Step 4) Talking to professors') ; }
+function add_combo_row_5(){ add_combo_row('Step 5) Avoiding the press') ; }
 
 // This allows the user to pause the spy mode, for whatever reason.  Perhaps in case the
 // host sees an event they like?  It doesn't seem to change anything at the moment!
@@ -124,14 +96,14 @@ function heartbeat(){
 // 2- Receive several events at once to reduce the load on the server.
 function ATLAS_get_event(){
   ATLAS_xmlhttp.onreadystatechange = ATLAS_process_event ;
-  var uri = 'event_store.php?task=get_event&team=ATLAS&sid=' + Math.random() ;
+  var uri = 'event_store.php?task=get_collisions&team=ATLAS&sid=' + Math.random() ;
   ATLAS_xmlhttp.open('GET', uri, true) ;
   ATLAS_xmlhttp.send(null) ;
 }
 
 function CMS_get_event(){
   CMS_xmlhttp.onreadystatechange = CMS_process_event ;
-  var uri = 'event_store.php?task=get_event&team=CMS&sid=' + Math.random() ;
+  var uri = 'event_store.php?task=get_collisions&team=CMS&sid=' + Math.random() ;
   CMS_xmlhttp.open('GET', uri, true) ;
   CMS_xmlhttp.send(null) ;
 }
