@@ -13,6 +13,8 @@ var collision_object = function(){
   this.nMu = 0 ;
   this.nEl = 0 ;
   
+  this.seed = floor(1e9*random()) ;
+  
   // Random number of jets.
   this.nJet = nJet_min + Math.floor(random()*(nJet_max-nJet_min)) ;
   

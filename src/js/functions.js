@@ -73,6 +73,9 @@ function heartbeat(){
 }
 
 function end_shift(){
+  // Send results to the server.
+  current_trigger.send_results_to_server() ;
+
   // Draw the shift end screen.
   set_header_and_footer_images() ;
   draw_shift_end_screen() ;
@@ -230,4 +233,51 @@ function update_score(){
   return score ;
 }
 
+function update_stats(){
+  Get('td_true_positives'          ).innerHTML = true_positives ;
+  Get('td_false_positives'         ).innerHTML = false_positives ;
+  Get('span_total_events_saved'    ).innerHTML = total_savedEvents ;
+  Get('td_higgsy_events'           ).innerHTML = higgsy_events ;
+  Get('td_false_negatives'         ).innerHTML = false_negatives ;
+  Get('span_total_events_delivered').innerHTML = total_deliveredEvents ;
+}
 
+function match_topologies(collision, target_topologies){
+  // This function compares the topology of a collision to the signal topologies.  It
+  // compares the topologies one at a time, removing items from the target topology as
+  // they are matched.
+  var topology = collision.topology ;
+  for(var i=0 ; i<target_topologies.length ; i++){
+    var target = target_topologies[i] ;
+    
+    // First make an array of matches and fill it with false
+    var matches = [] ;
+    for(var j=0 ; j<target.length ; j++){
+      matches.push(false) ;
+    }
+    
+    // Now compare the topologies.
+    for(var j=0 ; j<topology.length ; j++){
+      for(var k=0 ; k<target.length ; k++){
+        if(matches[k]) continue ;
+        if(topology[j]==target[k]){
+          matches[k] = true ;
+          break ;
+        }
+      }
+    }
+    
+    // At this point we have an array of matches for the target, so just run over the
+    // array of matches.  Assume success until we see a failure to match.
+    var success = true ;
+    for(var j=0 ; j<matches.length ; j++){
+      if(matches[j]==false){
+        success = false ;
+        break ;
+      }
+    }
+    if(success) return true ;
+  }
+  // If we get this far then none of the topologies were matched.
+  return false ;
+}
