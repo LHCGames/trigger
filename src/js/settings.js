@@ -142,6 +142,7 @@ var HiggsGG_topologies = [
 ] ;
 var signal_topologies = Higgs4L_topologies ;
 
+//particle topology
 var z_particles = 
 [
  [["electron","electron"],1],
