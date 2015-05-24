@@ -115,7 +115,6 @@ all_triggers.push(em_trigger) ;
 // function to get a random trigger.  This should be edited to be tweakable in the
 // settings, based on difficulty, age range etc
 function random_trigger(){
-  return all_triggers[4] ;
   return all_triggers[Math.floor(random()*all_triggers.length)] ;
 }
 
