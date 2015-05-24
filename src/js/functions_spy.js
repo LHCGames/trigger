@@ -301,7 +301,7 @@ function start(){
   
   // Add event listeners.  These are fairly straightforward.
   document.addEventListener('keydown', keyDown) ;
-  Get('button_freeze').addEventListener('click', freeze) ;
+  Get('button_freeze'       ).addEventListener('click', freeze) ;
   Get('button_analyse_ATLAS').addEventListener('click', analyse_ATLAS) ;
   Get('button_analyse_CMS'  ).addEventListener('click', analyse_CMS  ) ;
   Get('button_combine'      ).addEventListener('click', combine_results  ) ;
