@@ -116,7 +116,7 @@ function make_collision(){
   }
   else{
     var ev = new collision_object() ;
-    ev.topology = multi_lepton_topology;
+    ev.topology = multi_lepton_topology();
     return ev ;
   }
 }
