@@ -212,10 +212,11 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
     this.is_touched = true ;
     
     // We can probably make a loop over particle names here.  This was a rush job.
-    for(var i=0 ; i<particle_names.length ; i++){
-      if(particle_types[particle_names[i]]) this.response += this.particle_responses[particle_names[i]] ;
-    }
-    if(particle_types['pion']) this.response += this.particle_responses['pion'] ;
+    if(particle_types['electron']) this.response += this.particle_responses['electron'] ;
+    if(particle_types['muon'    ]) this.response += this.particle_responses['muon'    ] ;
+    if(particle_types['pion'    ]) this.response += this.particle_responses['pion'    ] ;
+    if(particle_types['photon'  ]) this.response += this.particle_responses['photon'  ] ;
+    if(particle_types['tau'     ]) this.response += this.particle_responses['tau'     ] ;
   }
 }
 

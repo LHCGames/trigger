@@ -121,25 +121,16 @@ var jet_track_pt_threshold = 30 ;
 // Colours for the particles:
 var track_color = 'rgb(200,200,200)' ;
 
-var particle_names = [] ;
-particle_names.push('electron') ;
-particle_names.push('muon'    ) ;
-particle_names.push('tau'     ) ;
-particle_names.push('photon'  ) ;
-
-function particle_settings_object(mass, charge, color, symbol, lineWidth, rCutoff){
+function particle_settings_object(mass, color, symbol, lineWidth){
   this.mass      = mass   ;
-  this.charge    = charge ;
   this.color     = color  ;
   this.symbol    = symbol ;
   this.lineWidth = lineWidth ;
-  this.rCutoff   = rCutoff ;
 }
 var particle_settings = [] ;
-particle_settings['muon'    ] = new particle_settings_object(mMu , 1, 'rgb(  0,200,  0)', '\u03BC', 2, 0.95*Sr) ;
-particle_settings['electron'] = new particle_settings_object(mEl , 1, 'rgb(255,100,100)', 'e'     , 2, 0.51*Sr) ;
-particle_settings['photon'  ] = new particle_settings_object(mEl , 0, 'rgb(150,150,  0)', '\u03B3', 2, 0.51*Sr) ;
-particle_settings['tau'     ] = new particle_settings_object(mTau, 1, 'rgb(100,  0,100)', '\u03C4', 2, 0.70*Sr) ;
+particle_settings['muon'    ] = new particle_settings_object(mMu , 'rgb(  0,200,  0)', '\u03BC', 2) ;
+particle_settings['electron'] = new particle_settings_object(mEl , 'rgb(255,100,100)', 'e'     , 2) ;
+particle_settings['tau'     ] = new particle_settings_object(mTau, 'rgb(100,  0,100)', '\u03C4', 2) ;
 
 // Signal topologies
 var Higgs4L_topologies = [
@@ -151,9 +142,7 @@ var Higgs4L_topologies = [
 var HiggsGG_topologies = [
   ['photon','photon'] 
 ] ;
-var HiggsAll_topologies = Higgs4L_topologies.concat(HiggsGG_topologies) ;
-var signal_topologies = HiggsGG_topologies ;
-var signal_topologies = HiggsAll_topologies ;
+var signal_topologies = Higgs4L_topologies ;
 
 //particle topology
 var z_particles = 
