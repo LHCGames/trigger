@@ -44,7 +44,8 @@ function trigger_object(topology, description, name){
   this.send_results_to_server = function(){
     var request = '?task=add_collisions&trigger=' + this.name + '&team=' + team_name + '&seeds=' ;
     for(var i=0 ; i<this.collisions.length ; i++){
-      request += this.collisions[i].seed + ';' ;
+      if(i>0) request += ',' ;
+      request += this.collisions[i].seed ;
     }
     var uri = 'event_store.php'+request+'&sid=' + Math.random() ;
     xmlhttp.open('GET', uri, true) ;

@@ -109,8 +109,6 @@ var  overlay_cells = false ;
 // Functions used to map real coordinates to canvas coordinates.
 var xMax = Sr ;
 var yMax = Sr ;
-function X_from_x(x){ return SR + SR*x/xMax ; }
-function Y_from_y(y){ return SR + SR*y/yMax ; }
 
 // Settings for the jets:
 // How much spread the jet is allowed to have per track
@@ -135,6 +133,7 @@ particle_settings['electron'] = new particle_settings_object(mEl, 'rgb(255,100,1
 // Signal topologies
 var Higgs4L_topologies = [
   ['electron','electron','electron','electron'] ,
+  ['electron','electron','muon','muon'] ,
   ['electron','electron','muon','muon'] ,
   ['muon','muon','muon','muon']
 ] ;

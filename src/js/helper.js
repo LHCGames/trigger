@@ -52,3 +52,8 @@ function GetXmlHttpObject(){
   }
   return null ;
 }
+
+// Converting real coordinates to canvas coordinates.
+function X_from_x(x){ return SR + SR*x/xMax ; }
+function Y_from_y(y){ return SR + SR*y/yMax ; }
+
