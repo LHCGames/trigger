@@ -136,13 +136,14 @@ function start(){
   current_trigger = random_trigger() ;
   current_trigger.update_text() ;
   
+  heartbeat() ;
+  
   window.setTimeout(begin, 10) ;
 }
 
 function begin(){
   // Now do the expensive stuff.
   make_detector() ;
-  heartbeat() ;
   
   // This is CPU intensive, so do it last
   make_cells() ;

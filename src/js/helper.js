@@ -9,7 +9,18 @@ function random_color(lower){
   return color ;
 }
 
-//function increment_td(id){ Get(id).innerHTML = parseInt(Get(id).innerHTML) + 1 ; }
+function psuedorandom_number_generator(){
+  this.seed = 1 ;
+  this.a = 1255214 ;
+  this.b = 247256 ;
+  this.set_seed = function(seed){
+    this.seed = seed ;
+  }
+  this.random = function(){
+    this.seed = this.seed*this.a%this.b ;
+    return this.seed/this.b ;
+  }
+}
 
 function  sqrt(x){ return Math.sqrt(x) ; }
 function  acos(x){ return Math.acos(x) ; }
