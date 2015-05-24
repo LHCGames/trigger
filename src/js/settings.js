@@ -142,3 +142,15 @@ var HiggsGG_topologies = [
   ['photon','photon'] 
 ] ;
 var signal_topologies = Higgs4L_topologies ;
+
+var z_particles = 
+[
+ [["electron","electron"],1],
+ [["muon","muon"],1]
+];
+
+var w_particles = 
+[
+ [["electron"],1],
+ [["muon"],1]
+];

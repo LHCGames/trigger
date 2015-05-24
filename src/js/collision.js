@@ -22,90 +22,6 @@ var collision_object = function(){
   this.hMass = 0 ;
   this.isHiggs = false ;
   
-  // Long winded functions to add leptons, that can be refactored quite simply, I'm sure.
-  // Change to 1 function with an array to determine lepton combinations used.
-  this.add_four_leptons  = function(){
-    if(random()<0.5){
-      this.nMu += 2 ;
-      this.topology.push('muon') ;
-      this.topology.push('muon') ;
-      if(random()<0.5){
-        this.nMu += 2;
-        this.topology.push('muon') ;
-        this.topology.push('muon') ;
-      }
-      else{
-        this.nEl += 2 ;
-        this.topology.push('electron') ;
-        this.topology.push('electron') ;
-      }
-    }
-    else{
-      this.nEl += 2
-      this.topology.push('electron') ;
-      this.topology.push('electron') ;
-      if(random()<0.5){
-        this.nMu += 2 ;
-        this.topology.push('muon') ;
-        this.topology.push('muon') ;
-      }
-      else{
-        this.nEl += 2 ;
-        this.topology.push('electron') ;
-        this.topology.push('electron') ;
-      }
-    }
-  }
-  this.add_three_leptons = function(){
-    if(random()<0.5){
-      this.nMu += 2 ;
-      this.topology.push('muon') ;
-      this.topology.push('muon') ;
-      if(random()<0.5){
-        this.nMu += 1;
-        this.topology.push('muon') ;
-      }
-      else{
-        this.nEl += 1 ;
-        this.topology.push('electron') ;
-      }
-    }
-    else{
-      this.nEl += 2
-      this.topology.push('electron') ;
-      this.topology.push('electron') ;
-      if(random()<0.5){
-        this.nMu += 1 ;
-        this.topology.push('muon') ;
-      }
-      else{
-        this.nEl += 1 ;
-        this.topology.push('electron') ;
-      }
-    }
-  }
-  this.add_two_leptons   = function(){
-    if(random()<0.5){
-      this.nMu += 2 ;
-      this.topology.push('muon') ;
-      this.topology.push('muon') ;
-    }
-    else{
-      this.nEl += 2
-      this.topology.push('electron') ;
-      this.topology.push('electron') ;
-    }
-  }
-  this.add_one_leptons   = function(){
-    if(random()<0.5){
-      this.nMu += 1 ;
-      this.topology.push('muon') ;
-    }
-    else{
-      this.nEl += 1 ;
-      this.topology.push('electron') ;
-    }
-  }
   this.purge = function(){
     // If we ever store events, this can be used to minimise memory use.
     this.jets    = [] ;
@@ -145,35 +61,61 @@ var collision_object = function(){
   }
 }
 
+var multi_lepton_topology = function() {
+
+ this.split_boson = function(part) {
+    this.part = part;
+    this.prob_tot = 0;
+    this.particle_array = [];
+    for (i=0;i<this.part.length;i++) {
+      this.name = this.part[i][0];
+      this.prob = this.part[i][1];
+      this.prob_tot += this.prob;
+      for (j=0;j<this.prob_tot;j++) {
+      this.particle_array = this.particle_array.concat(name);
+      } 
+    }
+    this.rnd = Math.floor(Math.random()*prob_tot);
+    this.particle_array = this.particle_array[rnd];
+    this.split = this.particle_array.split(",");
+    for (k=0;k<this.split.length;k++) {
+       topology.push(this.split[k]);
+    } 
+    this.particle_array = [];
+  }
+
+  this.decay_boson = function(boson) {
+    if (boson == "z") {
+    this.part = z_particles;
+    split_boson(this.part);
+    } else if (boson == "w") {
+      this.part = w_particles;
+    split_boson(this.part);
+    }
+    }
+
+  this.getLeptons = function() {
+  console.log("hello");
+    this.bosons = ["n","w","z"];
+    this.boson = bosons[Math.floor(Math.random() * bosons.length)];
+    decay_boson(boson);
+  }
+  
+  this.topology = [];
+  this.getLeptons();
+  this.getLeptons();
+  return topology;
+}
+
 function make_collision(){
   // Generate a random event, populating it with leptons.
   var r = random() ;
   if(r<cumulative_probability['H']){
     return make_Higgs_collision(126) ;
   }
-  else if(r<cumulative_probability['4L']){
-    var ev = new collision_object() ;
-    ev.add_four_leptons() ;
-    ev.hMass = 100 + 50*random() ;
-    return ev ;
-  }
-  else if(r<cumulative_probability['3L']){
-    var ev = new collision_object() ;
-    ev.add_three_leptons() ;
-    return ev ;
-  }
-  else if(r<cumulative_probability['2L']){
-    var ev = new collision_object() ;
-    ev.add_two_leptons() ;
-    return ev ;
-  }
-  else if(r<cumulative_probability['1L']){
-    var ev = new collision_object() ;
-    ev.add_one_leptons() ;
-    return ev ;
-  }
   else{
     var ev = new collision_object() ;
+    ev.topology = multi_lepton_topology;
     return ev ;
   }
 }
@@ -181,7 +123,7 @@ function make_Higgs_collision(mass){
   // This just sets the Higgs flag in the event.
   var ev = new collision_object() ;
   ev.isHiggs = true ;
-  ev.add_four_leptons() ;
+  ev.topology = Higgs4L_topologies[Math.floor(Math.random * Higgs4L_topologies.length)] ;
   ev.hMass = mass ;
   return ev ;
 }
