@@ -1,17 +1,33 @@
 // Classes etc for handling the beam collisions.  A collision gives rise to jets, tracks,
 // and other particles (so far just electrons and muons.)
 
+var collision_parameters = {
+  nJet_min      :   2,
+  nJet_max      :  10,
+  nTrack_min    :   5,
+  nTrack_max    :  20,
+  jet_pt_min    :  50 ,
+  jet_pt_max    : 150 ,
+  track_pt_min  :  10 ,
+  track_pt_max  :  90 ,
+  jet_track_dphi: 0.05*pi ,
+  jet_track_pt_threshold: 30,
+  prob_has_cosmics: 0.8
+}
+
 var collision_object = function(){
   // Particles in the collision.
-  this.jets    = [] ;
-  this.tracks  = [] ;
-  this.leptons = [] ;
+  this.jets           = [] ;
+  this.tracks         = [] ;
+  this.main_particles = [] ;
   
   this.topology = [] ;
-  this.seed = floor(1e9*random()) ;
+  this.isCosmic = false ;
   
-  // Random number of jets.
-  this.nJet = nJet_min + Math.floor(random()*(nJet_max-nJet_min)) ;
+  // Give the collision a pseudorandom number generator.
+  this.seed = floor(1e9*random()) ;
+  this.PNG = new psuedorandom_number_generator() ;
+  this.PNG.set_seed(this.seed) ;
   
   // If the event is a Higgs event, give it a mass and set the flag.
   this.hMass = 0 ;
@@ -21,166 +37,192 @@ var collision_object = function(){
     // If we ever store events, this can be used to minimise memory use.
     this.jets    = [] ;
     this.tracks  = [] ;
-    this.leptons = [] ;
+    this.main_particles = [] ;
   }
   this.make_particles = function(){
     // Random assign particles their kinematic properties.  This should be changed to
     // generate pseudorandom numbers using a seed instead, so that the spy mode sees
     // exactly the same events as they players by passing a single number around.
     // These variables should be stored in settings.js.
-    for(var i=0 ; i<0 ; i++){
-      var q = (random()<0.5) ? -1 : 1 ;
-      var pt  = 10 + 90*random() ;
-      var phi = 2*pi*random() ;
+    
+    if(this.isCosmic){
+      this.topology = (this.PNG.random()<collision_parameters.prob_has_cosmics) ? ['muon','muon'] : [] ;
+      var charge = (this.PNG.random()<0.5) ? -1 : 1 ;
+      var phi = 0.5*pi+this.PNG.random()*pi*0.25 ;
+      var x0 = Sr*(-0.1 + 0.2*this.PNG.random()) ;
+      var y0 = Sr*(-0.1 + 0.2*this.PNG.random()) ;
+      for(var i=0 ; i<this.topology.length ; i++){
+        if(i==1) phi += pi ;
+        var muon = new particle_object(this.topology[i], charge, 30, phi, x0, y0, true) ;
+        this.main_particles.push(muon) ;
+        charge *= -1 ;
+      }
+      return ;
+    }
+    
+    var pars = collision_parameters ;
+    
+    // Make some tracks and jets.
+    var nTracks = pars.nTrack_min + floor(this.PNG.random()*(pars.nTrack_max-pars.nTrack_min)) ;
+    var nJets   = pars.nJet_min   + floor(this.PNG.random()*(pars.nJet_max-pars.nJet_min)) ;
+    
+    for(var i=0 ; i<nTracks ; i++){
+      var q = (this.PNG.random()<0.5) ? -1 : 1 ;
+      var pt  = pars.track_pt_min + (pars.track_pt_max-pars.track_pt_min)*this.PNG.random() ;
+      var phi = 2*pi*this.PNG.random() ;
       var color = track_color ;
-      var track = new trackObject(q, mPi, pt, phi, color, 'pion') ;
+      var track = new trackObject(q, mPi, pt, phi, 0, 0, color, 'pion', false) ;
       this.tracks.push(track) ;
     }
-    for(var i=0 ; i<this.nJet ; i++){
-      var pt = 50 + 150*random() ;
-      var phi = 2*pi*random() ;
-      var color = random_color(100) ;
-      var jet = new jet_object(pt, phi, color) ;
+    for(var i=0 ; i<nJets ; i++){
+      var pt = pars.jet_pt_min + (pars.jet_pt_max-pars.jet_pt_min)*this.PNG.random() ;
+      var phi = 2*pi*this.PNG.random() ;
+      var color = random_color(100, this.PNG) ;
+      var jet = new jet_object(pt, phi, 0, 0, color, this.PNG) ;
       this.jets.push(jet) ;
     }
-    var charge = (random()<0.5) ? -1 : 1 ;
+    var charge = (this.PNG.random()<0.5) ? -1 : 1 ;
     var phi = 0 ;
-    for(var i=0 ; i<topology.length ; i++){
-      phi = (i%2==1) ? (0.5+random())*pi+phi : 2*pi*random() ;
-      this.leptons.push(new particle_object(topology[i], charge, 30, phi)) ;
+    for(var i=0 ; i<this.topology.length ; i++){
+      phi = (i%2==1) ? (0.5+this.PNG.random())*pi+phi : 2*pi*this.PNG.random() ;
+      this.main_particles.push(new particle_object(this.topology[i], charge, 30, phi, 0, 0, false)) ;
       charge *= -1 ;
     }
   }
-}
-
-//multi lepton topology
-var multi_lepton_topology = function() {
-
- this.split_boson = function(part) {
-    this.part = part;
-    this.prob_tot = 0;
-    this.particle_array = [];
-    for(var i=0;i<this.part.length;i++) {
-      this.name = this.part[i][0];
-      this.prob = this.part[i][1];
-      this.prob_tot += this.prob;
-      for (var j=0;j<this.prob;j++) {
-        this.particle_array = this.particle_array.concat(name);
-      } 
+  
+  this.draw_tracks = function(context){
+    for(var i=0 ; i<this.tracks.length ; i++){
+      this.tracks[i].draw(context) ;
     }
-    this.rnd = Math.floor(Math.random()*prob_tot);
-    this.particle_array = this.particle_array[this.rnd];
-    this.split = this.particle_array.split(",");
-    for(var k=0;k<this.split.length;k++) {
-       this.topology.push(this.split[k]);
-    }
-    this.particle_array = [];
   }
-
-  this.decay_boson = function(boson) {
-    if (boson == "z") {
-    this.part = z_particles;
-    split_boson(this.part);
-    } else if (boson == "w") {
-      this.part = w_particles;
-    split_boson(this.part);
+  this.draw_jets = function(context){
+    for(var i=0 ; i<this.jets.length ; i++){
+      this.jets[i].draw(context) ;
     }
+  }
+  this.draw_main_particles = function(context){
+    for(var i=0 ; i<this.main_particles.length ; i++){
+      this.main_particles[i].draw(context) ;
     }
-
-  this.getLeptons = function() {
-    this.bosons = ["n","w","z"];
-    this.boson = bosons[Math.floor(Math.random() * bosons.length)];
-    decay_boson(boson);
   }
   
-  this.topology = [];
-  this.getLeptons();
-  this.getLeptons();
-  return this.topology;
+  this.end_collision = function(){
+    if(game.mode=='suddenDeath'){
+      var trigger = game.current_shift.trigger ;
+      if(trigger.fired==true  && trigger.match_collision==false){
+        game.state = 'game_over' ;
+        game.difficulty = 'easy' ;
+        game.game_over_message = 'You should not have clicked that collision.' ;
+      }
+      else if(trigger.fired==false && trigger.match_collision==true){
+        game.state = 'game_over' ;
+        game.difficulty = 'easy' ;
+        game.game_over_message = 'Oops!  You missed a collision.' ;
+      }
+    }
+  }
 }
 
 function make_collision(){
-  // Generate a random event, populating it with leptons.
+  // Generate a random event, populating it with main_particles.
   var r = random() ;
-  if(r<cumulative_probability['H']){
+  if(r<probability_Higgs && game.mode=='collaborative'){
     return make_Higgs_collision(126) ;
   }
   else{
-    var ev = new collision_object() ;
-    ev.topology = multi_lepton_topology();
-    return ev ;
+    var coll = new collision_object() ;
+    if(game.mode=='cosmics') coll.isCosmic = true ;
+    coll.topology = decay_scheme.recursively_decay(coll.PNG) ;
+    return coll ;
   }
 }
 function make_Higgs_collision(mass){
   // This just sets the Higgs flag in the event.
-  var ev = new collision_object() ;
-  ev.isHiggs = true ;
-  ev.topology = Higgs4L_topologies[Math.floor(Math.random() * Higgs4L_topologies.length)] ;
-  ev.hMass = mass ;
-  return ev ;
+  var coll = new collision_object() ;
+  coll.isHiggs = true ;
+  coll.topology = decay_scheme['signal'].recursively_decay(coll.PNG) ;
+  coll.hMass = mass ;
+  return coll ;
 }
 
 function collision_thread(){
   // Okay, now things get a bit tricky again.
-  if(collision_counter>collisions_per_shift){
-    // This is needed to ensure we capture the final event of the shift properly.
-    // As usual, move variables to the settings.js so they are not hardcoded.
-    window.setTimeout(end_shift, 50) ;
-    
-    // Reset the collision counter.
-    collision_counter = 0 ;
+  // First allow the user to click.
+  
+  if(game.state=='game_over'){
+    game.draw_game_over_screen() ;
     return ;
   }
-  if(paused){
+  
+  game.can_click = true ;
+  
+  if(game.current_shift.collision_counter==collisions_per_shift){
+    game.current_shift.trigger.update_table() ;
+    window.setTimeout(game.end_shift, delay) ;
+    
+    // Reset the collision counter.
+    game.current_shift.collision_counter = 0 ;
+  }
+  else if(game.paused){
     // Why do we reset the delay here?  I forget...
     collision_delay = collision_delay_max ;
+    window.setTimeout(collision_thread, delay) ;
+    return ;
   }
   else{
     // Update the states.
-    current_trigger.update_table() ;
+    game.current_shift.trigger.update_table() ;
+    
+    // Reset all the cells and segments so we can analyse the event.
+    detector.start_collision() ;
     
     // Update all the detector segments so they light up properly.
-    current_collision = process_collision() ;
+    game.current_shift.current_collision = make_collision() ;
+    game.current_shift.current_collision.make_particles() ;
+    detector.process_collision(game.current_shift.current_collision) ;
     
     // Draw things.  This is expensive!
-    draw_eventDisplay(current_collision, context) ;
+    draw_eventDisplay(game.current_shift.current_collision, context) ;
     
     // Speed up the event as the run continues.
     var dDelay = 0.5*(collision_delay - collision_delay_min) ;
     collision_delay = collision_delay - dDelay ;
     
     // Reset the trigger flags.
-    current_trigger.start_collision() ;
+    game.current_shift.trigger.start_collision() ;
     
     // Increment the counter.
-    collision_counter++ ;
+    game.current_shift.collision_counter++ ;
+    
+    // Saving events- add an option to turn this off to reduce memory usage!
+    game.current_shift.collisions.push(game.current_shift.current_collision) ;
     
     // Single player mode only.
-    if(collision_counter<collisions_per_shift) Get('span_eventNumber').innerHTML = collision_counter ;
+    if(game.current_shift.collision_counter<collisions_per_shift){
+      Get('span_eventNumber').innerHTML = game.current_shift.collision_counter ;
+    }
     
-    update_score() ;
+    game.update_score() ;
+    
+    // Enable the user to click.
+    game.enable_click() ;
+    
+    // Make the next collision.
+    window.setTimeout(collision_breather, collision_delay) ;
   }
-  // Make the next collision.
-  window.setTimeout(collision_thread, collision_delay) ;
 }
 
-function process_collision(){
-  // Reset all the cells and segments so we can analyse the event.
-  for(var i=0 ; i<cells_linear.length ; i++){
-    cells_linear[i].start_collision() ;
+// This function just gives the player a chance to see the result of their choice.
+function collision_breather(){
+  if(game.paused){
+    window.setTimeout(collision_breather, delay) ;
   }
-  for(var i=0 ; i<segments.length ; i++){
-    segments[i].start_collision() ;
+  else{
+    game.can_click = false ;
+    game.current_shift.current_collision.end_collision() ;
+    clear_canvas(context) ;
+    draw_eventDisplay_base(context) ;
+    window.setTimeout(collision_thread, collision_breath) ;
   }
-  
-  // Now make a new collision and light up the detector.
-  var ev = make_collision() ;
-  ev.make_particles() ;
-  for(var i=0 ; i<cells_linear.length ; i++){
-    cells_linear[i].update_segments() ;
-  }
-  
-  // Saving events- add an option to turn this off to reduce memory usage!
-  collision_list.push(ev) ;
-  return ev ;
 }
+

@@ -20,7 +20,7 @@ function four_lepton_mass_histogram(){
   this.binsInOrder_index = 0 ;
   
   // The colour of the histogram should match the experiment.
-  this.color = neutral_color ;
+  this.color = teams['neutral'].color ;
   
   this.add_mass = function(mass){
     // This adds a mass to the histograms.  The lookup function is quite cheap.

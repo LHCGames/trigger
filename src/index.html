@@ -6,15 +6,6 @@
 <link type="text/css" rel="stylesheet" media="all" href="style.css" />
 <script type="text/javascript" src="js/settings.js"></script>
 <script type="text/javascript" src="js/helper.js"></script>
-<script type="text/javascript" src="js/detector.js"></script>
-<script type="text/javascript" src="js/particle.js"></script>
-<script type="text/javascript" src="js/cell.js"></script>
-<script type="text/javascript" src="js/draw.js"></script>
-<script type="text/javascript" src="js/collision.js"></script>
-<script type="text/javascript" src="js/histogram.js"></script>
-<script type="text/javascript" src="js/trigger.js"></script>
-<script type="text/javascript" src="js/header_footer.js"></script>
-<script type="text/javascript" src="js/functions.js"></script>
 </head>
 <body onload="start()">
 
@@ -24,61 +15,35 @@
   <div id="div_teamname" class="tab_cell">Team CERN</div>
   <div id="div_header"   class="tab_cell"></div>
 </div>
+  <div id="navcontainer">
+      <ul id="navlist">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="play.html">Play</a></li>
+      <li><a href="scores.html">Scores</a></li>
+      <li><a href="spy.html">Spy mode</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </div>
 
-<canvas id="canvas_eventDisplay" width="750px" height="750px"></canvas>
+<div class="right">
+  <h3>Trigger game</h3>
+  <div class="blurb">
+    <p>Welcome to the trigger game!  This game is currently in development.  You play the role of the "trigger" system of a major particle physics experiment, trying to save as many interesting physics events as possible.  It's a fast paced game where you have to match the on screen event displays as collisions occur, without making too many mistakes.</p>
+  </div>
+  
+  <h3>Thanks and small print</h3>
+  <div class="blurb">
+    <p>The work to date has been made possible thanks to the generosity of the Ogden Trust.  The game is developed by Aidan Randle-Conde and Khuram Rashid, with support from Sam Gregson and Ben Still. We are grateful to the Grammar School at Leeds for their support and feedback.  We are grateful to CERN and soundbible for use of the CMS detector image, and the sounds, respectively.  Although we use the words "CERN", "ATLAS", and "CMS", we are not associated with them in any way, these are merely placeholder names.</p>
+  </div>
+</div>
 
 <div id="div_footer" class="tab">
 </div>
 
 </div>
 
-<pre id="pre_debug"></pre>
 
-<div id="div_hidden">
-  <img id="img_CMSPhoto" src="images/CMSPhoto.jpg" />
-  <img id="img_ATLAS" src="images/ATLAS.jpg" />
-  <img id="img_CMS"   src="images/CMS.jpg"   />
-  <img id="img_header" src="images/header.png"/>
-  <img id="img_footer" src="images/footer.png"/>
-  
-  <table id="table_events_summary">
-      <tbody>
-        <tr>
-          <th class="events_summary">Total events saved:</th>
-          <td class="events_summary" id="td_total_events"><span id="span_total_events_saved">0</span>/<span id="span_total_events_delivered">0</span></td>
-          
-          <th class="events_summary">True positives:</th>
-          <td class="events_summary" id="td_true_positives">0</td>
-        </tr>
-        <tr>
-          <th class="events_summary">"Higgsy" events:</th>
-          <td class="events_summary" id="td_higgsy_events">0</td>
-          
-          <th class="events_summary">False positives:</th>
-          <td class="events_summary" id="td_false_positives">0</td>
-        </tr>
-        <tr>
-          <th class="events_summary">Event number:</th>
-          <td class="events_summary"><span id="span_eventNumber">0</span>/<span id="span_eventsPerShift">0</span></td>
-          
-          <th class="events_summary">False negatives:</th>
-          <td class="events_summary" id="td_false_negatives">0</td>
-        </tr>
-        <tr>
-          <th class="events_summary">Shift number:</th>
-          <td class="events_summary"><span id="span_shiftNumber">0</span>/<span id="span_shiftsPerGame">0</span></td>
-          
-          <th class="events_summary">Score:</th>
-          <td class="events_summary" id="td_score">0</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <div id="div_topology" class="tab_cell">
-      Trigger events that contain:<br />
-      <span id="span_trigger_description"></span>
-    </div>
-</div>
+
 
 </body>
 </html>

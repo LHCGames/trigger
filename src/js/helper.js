@@ -1,10 +1,10 @@
 // A series of trivial functions to save some typing.  The most common mathematcal
 // functions are aliased here to save typing.
 
-function random_color(lower){
-  var r = Math.floor(lower + random()*(255-lower)) ;
-  var g = Math.floor(lower + random()*(255-lower)) ;
-  var b = Math.floor(lower + random()*(255-lower)) ;
+function random_color(lower, rnd){
+  var r = Math.floor(lower + rnd.random()*(255-lower)) ;
+  var g = Math.floor(lower + rnd.random()*(255-lower)) ;
+  var b = Math.floor(lower + rnd.random()*(255-lower)) ;
   var color = 'rgb('+r+','+g+','+b+')' ;
   return color ;
 }
@@ -14,7 +14,7 @@ function psuedorandom_number_generator(){
   this.a = 1255214 ;
   this.b = 247256 ;
   this.set_seed = function(seed){
-    this.seed = seed ;
+    this.seed = floor(seed) ;
   }
   this.random = function(){
     this.seed = this.seed*this.a%this.b ;
@@ -22,6 +22,7 @@ function psuedorandom_number_generator(){
   }
 }
 
+function   abs(x){ return Math. abs(x) ; }
 function  sqrt(x){ return Math.sqrt(x) ; }
 function  acos(x){ return Math.acos(x) ; }
 function   cos(x){ return Math. cos(x) ; }

@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd" >
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>Trigger that Higgs!</title> 
+<link type="text/css" rel="stylesheet" media="all" href="style.css" />
+<script type="text/javascript" src="js/settings.js"></script>
+<script type="text/javascript" src="js/helper.js"></script>
+<script type="text/javascript" src="js/controls.js"></script>
+<script type="text/javascript" src="js/detector.js"></script>
+<script type="text/javascript" src="js/particle.js"></script>
+<script type="text/javascript" src="js/draw.js"></script>
+<script type="text/javascript" src="js/decay.js"></script>
+<script type="text/javascript" src="js/collision.js"></script>
+<script type="text/javascript" src="js/histogram.js"></script>
+<script type="text/javascript" src="js/trigger.js"></script>
+<script type="text/javascript" src="js/header_footer.js"></script>
+<script type="text/javascript" src="js/shift.js"></script>
+<script type="text/javascript" src="js/game.js"></script>
+<script type="text/javascript" src="js/functions.js"></script>
+</head>
+<body onload="start()">
+
+<div id="div_gameWrapper">
+
+<div class="tab">
+  <div id="div_teamname" class="tab_cell">Team CERN</div>
+  <div id="div_header"   class="tab_cell"></div>
+</div>
+
+<div id="div_playSpace">
+  <div id="div_playFrontPage">
+    <div id="navcontainer">
+      <ul id="navlist">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="play.html">Play</a></li>
+      <li><a href="scores.html">Scores</a></li>
+      <li><a href="spy.html">Spy mode</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </div>
+  
+  
+    <table id="table_play">
+      <tbody>
+        <tr class="play_even">
+          <th class="play_image">
+            <img class="play" src="images/keyboard.png" width="100px" height="100px" alt="Change your name" />
+          </th class="play_image">
+          <td>
+            <h2 class="play">Enter your name:</h2>
+            <p class="play"><input id="input_name" value="CERN person #239"/></p>
+          </td>
+          <td><button id="button_name" class="play">Change</button</td>
+        </tr>
+        
+        <tr class="play_odd">
+          <th class="play_image">
+            <img class="play" src="images/ascii.png" width="100px" height="100px" alt="Play collaborative mode" />
+          </th class="play_image">
+          <td>
+            <h2 class="play">Collaborative mode</h2>
+            <p class="play">Choose either Team ATLAS or Team CMS, and discover the Higgs boson together!</p>
+          </td>
+          <td><button id="button_playCollaborative" class="play">Play!</button</td>
+        </tr>
+        <tr class="play_even">
+          <th class="play_image">
+            <img class="play" src="images/ascii.png" width="100px" height="100px" alt="Play story mode" />
+          </th>
+          <td>
+            <h2 class="play">Story mode</h2>
+            <p class="play">Take part in your own research project, from start to finish.</p>
+          </td>
+          <td><button id="button_playStory" class="play">Play!</button</td>
+        </tr>
+        <tr class="play_odd">
+          <th class="play_image">
+            <img class="play" src="images/ascii.png" width="100px" height="100px" alt="Play vs mode" />
+          </th>
+          <td>
+            <h2 class="play">VS mode</h2>
+            <p class="play">Challenge your friend to see who does best with exactly the same collisions.</p>
+          </td>
+          <td><button id="button_playVS" class="play">Play!</button</td>
+        </tr>
+        <tr class="play_even">
+          <th class="play_image">
+            <img class="play" src="images/ascii.png" width="100px" height="100px" alt="Play sudden death mode" />
+          </th>
+          <td>
+            <h2 class="play">Sudden death mode</h2>
+            <p class="play">How long can you last without making a mistake?</p>
+          </td>
+          <td><button id="button_playSuddenDeath" class="play"">Play!</button</td>
+        </tr>
+        <tr class="play_odd">
+          <th class="play_image">
+            <img class="play" src="images/ascii.png" width="100px" height="100px" alt="Play pro mode" />
+          </th>
+          <td>
+            <h2 class="play">Pro mode</h2>
+            <p class="play">The same as sudden death mode, but without particle tracks!</p>
+          </td>
+          <td><button id="button_playPro" class="play"">Play!</button</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="div_footer" class="tab">
+</div>
+
+</div>
+
+<pre id="pre_debug"></pre>
+
+<div id="div_hidden">
+  <canvas id="canvas_eventDisplay" width="750px" height="750px"></canvas>
+
+  <table id="table_events_summary">
+    <tbody>
+      <tr>
+        <th class="events_summary">Total events saved:</th>
+        <td class="events_summary" id="td_totalEvents"><span id="span_total_events">0</span>/<span id="span_total_deliveredEvents">0</span></td>
+        
+        <th class="events_summary">True positives:</th>
+        <td class="events_summary" id="td_true_positives"><span id="span_true_positives">0</span></td>
+      </tr>
+      <tr>
+        <th class="events_summary">"Higgsy" events:</th>
+        <td class="events_summary" id="td_higgsy_events"><span id="span_higgsy_events">0</span></td>
+        
+        <th class="events_summary">False positives:</th>
+        <td class="events_summary" id="td_false_positives"><span id="span_false_positives">0</span></td>
+      </tr>
+      <tr>
+        <th class="events_summary">Event number:</th>
+        <td class="events_summary"><span id="span_eventNumber">0</span>/<span id="span_eventsPerShift">0</span></td>
+        
+        <th class="events_summary">False negatives:</th>
+        <td class="events_summary" id="td_false_negatives"><span id="span_false_negatives">0</span></td>
+      </tr>
+      <tr>
+        <th class="events_summary">Shift number:</th>
+        <td class="events_summary"><span id="span_shiftNumber">0</span>/<span id="span_shiftsPerGame">0</span></td>
+        
+        <th class="events_summary">Score:</th>
+        <td class="events_summary" id="td_score">0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <img id="img_ATLAS" src="images/ATLAS.jpg" />
+  <img id="img_CMS"   src="images/CMS.jpg"   />
+  <img id="img_header" src="images/header.png"/>
+  <img id="img_footer" src="images/footer.png"/>
+  
+  <audio id="audio_win">
+    <source src="sounds/magicWand.wav" type="audio/wav">
+    <embed height="50" width="100" src="sounds/magicWand.wav">
+  </audio>
+  <audio id="audio_fail">
+    <source src="sounds/fail.mp3" type="audio/mpeg">
+    <embed height="50" width="100" src="sounds/fail.mp3">
+  </audio>
+  
+  <canvas id="canvas_eventDisplay_hidden" width="750px" height="750px"></canvas>
+  <img id="img_CMSPhoto" src="images/CMSPhoto.jpg" />
+  
+  <div id="div_topology" class="tab_cell">
+    Trigger events that contain:<br />
+    <span id="span_trigger_description"></span>
+  </div>
+  
+  <div id="div_eventDisplay">
+  </div>
+</div>
+
+</body>
+</html>

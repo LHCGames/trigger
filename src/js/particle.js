@@ -2,44 +2,48 @@
 // etc) but some parts are broken.
 
 // These particles have tracks.
-function particle_object(type, charge, pt, phi){
+function particle_object(type, charge, pt, phi, x0, y0, isCosmic){
   this.type   = type   ;
   this.charge = charge ;
   this.pt     = pt     ;
   this.phi    = phi    ;
   this.settings = particle_settings[this.type] ;
   this.charge = this.settings.charge ; // Set charge to 0 for photons.
+  this.mass = this.settings.mass ;
+  this.isCosmic = isCosmic ;
   
-  this.track = new trackObject(this.charge, mMu, this.pt, this.phi, this.settings.color, this.type) ;
+  this.track = new trackObject(this.charge, this.mass, this.pt, this.phi, x0, y0, this.settings.color, this.type, this.isCosmic) ;
   this.track.lineWidth = this.settings.lineWidth ;
   this.draw = function(context){
     this.track.draw(context) ;
     
-    var xy = this.track.path[this.track.path.length-1] ;
+    var xy = this.track.trajectory[this.track.trajectory.length-1] ;
     var X = X_from_x(xy[0]) ;
     var Y = Y_from_y(xy[1]) ;
-    draw_particle_head(context, X, Y, 5, this.settings.color, this.settings.symbol) ;
+    draw_particle_head(context, X, Y, 5, this.settings.color, this.settings.symbol, this.settings.headShape) ;
   }
 }
 
 // This class has tracks as members.
-function jet_object(pt, phi, color){
+function jet_object(pt, phi, x0, y0, color, PNG){
   this.pt  = pt  ;
   this.phi = phi ;
   this.color = color ;
   this.tracks = [] ;
+  this.x0 = x0 ;
+  this.y0 = y0 ;
   var remaining_pt = pt ;
   var charge = (random()<0.5) ? 1 : -1 ;
   do{
     charge *= -1 ;
     var sign = -charge ;
-    var pt_tmp  = 0.75*remaining_pt*random() ;
-    var phi_tmp = this.phi + sign*random()*jet_track_dphi ;
+    var pt_tmp  = 0.75*remaining_pt*PNG.random() ;
+    var phi_tmp = this.phi + sign*PNG.random()*collision_parameters.jet_track_dphi ;
     remaining_pt -= pt_tmp ;
-    this.tracks.push(new trackObject(charge, mPi, pt_tmp, phi_tmp, this.color, 'pion')) ;
-  } while(remaining_pt>jet_track_pt_threshold) ;
+    this.tracks.push(new trackObject(charge, mPi, pt_tmp, phi_tmp, 0, 0, this.color, 'pion', false)) ;
+  } while(remaining_pt>collision_parameters.jet_track_pt_threshold) ;
   for(var i=0 ; i<this.tracks.length ; i++){
-    this.tracks[i].make_path() ;
+    this.tracks[i].make_trajectory(detector) ;
   }
   this.draw = function(context){
     for(var i=0 ; i<this.tracks.length ; i++){
@@ -48,8 +52,7 @@ function jet_object(pt, phi, color){
   }
 }
 
-
-function trackObject(charge, mass, pt, phi, color, particle_type){
+function trackObject(charge, mass, pt, phi, x0, y0, color, particle_type, isCosmic){
   this.charge = charge ;
   this.mass = mass ;
   this.pt  =  pt ;
@@ -57,21 +60,24 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
   this.color = color ;
   this.particle_type = particle_type ;
   this.lineWidth = 1 ;
-  this.path = [] ;
+  this.trajectory = [] ;
+  this.x0 = x0 ;
+  this.y0 = y0 ;
+  this.isCosmic = isCosmic ;
   
   this.specialParticle = false ;
-  for(var j=0 ; j<particle_names.length ; j++){
-    if(particle_names[j]==this.particle_type) this.specialParticle = true ;
+  for(var j=0 ; j<special_particle_names.length ; j++){
+    if(special_particle_names[j]==this.particle_type) this.specialParticle = true ;
   }
   
-  this.make_path = function(){
+  this.make_trajectory = function(theDetector){
     // This should propagate a particle using the Lorentz force law for the magnetic
     // fields in the detector.  It's a bit broken because the units are not handled
     // properly.
     
     // Parameters based on the magnetic field, and particle mass.
-    var k1 =  pow(SoL,2)*B1/(this.mass*1e9) ;
-    var k2 = -pow(SoL,2)*B2/(this.mass*1e9) ;
+    var k1 =  pow(SoL,2)*theDetector.B1/(this.mass*1e9) ;
+    var k2 = -pow(SoL,2)*theDetector.B2/(this.mass*1e9) ;
     
     // Express v in ms^-1.
     var gv = this.pt/this.mass ;
@@ -81,13 +87,11 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
     
     // Express t in s.
     var dt = 1e-9 ;
-    var x0 =  0 ;
-    var y0 =  0 ;
-    var x  = x0 ;
-    var y  = y0 ;
+    var x  = this.x0 ;
+    var y  = this.y0 ;
     var sign = this.charge ;
     var k = k1 ;
-    this.path.push([x,y]) ;
+    this.trajectory.push([x,y]) ;
     for(var i=0 ; i<1000 ; i++){
       var b2 = (vx*vx+vy*vy)/(SoL*SoL) ;
       var g  = 1/sqrt(1-b2) ;
@@ -113,44 +117,46 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
       if(this.specialParticle){
         if(r>particle_settings[this.particle_type].rCutoff) break ;
       }
-      if(r>0.2*Sr){
+      if(r<detector.magnetFlipR){
+        sign = this.charge ;
+        k = k1 ;
+      }
+      else if(r<detector.magnetStepR){
         sign = -this.charge ;
         k = k2 ;
       }
-      if(r>0.45*Sr){
+      else if(r<detector.magnetEdgeR){
         sign = -this.charge ;
         k = 0 ;
       }
-      if(r>0.95*Sr){
+      else{
         break ;
       }
-      this.path.push([x,y]) ;
+      this.trajectory.push([x,y]) ;
     }
-    
-    // Now touch all the cells so that the segments can get turned on.
-    for(var i=0 ; i<this.path.length ; i++){
-      var xy = this.path[i] ;
+  }
+  this.touch_cells = function(the_detector){
+    // Touch all the cells so that the segments can get turned on.
+    for(var i=0 ; i<this.trajectory.length ; i++){
+      var xy = this.trajectory[i] ;
       var x = xy[0] ;
       var y = xy[1] ;
       var r  = sqrt(x*x+y*y) ;
       var phi = atan2(y,x) ;
       if(phi<0   ) phi += 2*pi ;
       if(phi>2*pi) phi -= 2*pi ;
-      var X = X_from_x(x) ;
-      var Y = Y_from_y(y) ;
-      var R = sqrt(x*x+y*y) ;
       var u = floor(  r/cellSizeR  ) ;
       var v = floor(phi/cellSizePhi) ;
-      if(u<cells.length){
-        if(v<cells[u].length){
-          cells[u][v].touch(this.particle_type) ;
+      if(u<the_detector.cells.length){
+        if(v<the_detector.cells[u].length){
+          the_detector.cells[u][v].touch(this.particle_type) ;
         }
       }
     }
-    
     return ;
   }
-  this.make_path() ;
+  this.make_trajectory(detector) ;
+  this.touch_cells(detector) ;
   
   this.draw = function(context){
     context.save() ;
@@ -158,50 +164,29 @@ function trackObject(charge, mass, pt, phi, color, particle_type){
     
     context.lineWidth = 2*this.lineWidth ;
     context.strokeStyle = 'rgb(255,255,255)' ;
-    context.moveTo(X_from_x(this.path[0][0]),Y_from_y(this.path[0][1])) ;
+    context.moveTo(X_from_x(this.trajectory[0][0]),Y_from_y(this.trajectory[0][1])) ;
     var rTmp = 0 ;
-    for(var i=0 ; i<this.path.length ; i++){
-      var xy = this.path[i] ;
+    for(var i=0 ; i<this.trajectory.length ; i++){
+      var xy = this.trajectory[i] ;
       var r = sqrt( pow(xy[0],2) + pow(xy[1],2) ) ;
-      if(r<rTmp) break ;
+      if(r<rTmp && this.isCosmic==false) break ;
       rTmp = r ;
-      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron'  && this.particle_type!='tau') break ;
+      if(this.specialParticle){
+        if(r>particle_settings[this.particle_type].rCutoff) break ;
+      }
+      else if(r>0.3*Sr){
+        break ;
+      }
       context.lineTo(X_from_x(xy[0]),Y_from_y(xy[1])) ;
     }
     context.stroke() ;
     
-    context.beginPath() ;
     context.lineWidth = this.lineWidth ;
     context.strokeStyle = this.color ;
-    context.shadowBlur = 10;
-    context.shadowColor = this.color;
-    context.moveTo(X_from_x(this.path[0][0]),Y_from_y(this.path[0][1])) ;
-    rTmp = 0 ;
-    for(var i=0 ; i<this.path.length ; i++){
-      var xy = this.path[i] ;
-      var r = sqrt( pow(xy[0],2) + pow(xy[1],2) ) ;
-      if(r<rTmp) break ;
-      rTmp = r ;
-      if(r>0.3*Sr && this.particle_type!='muon' && this.particle_type!='electron' && this.particle_type!='tau') break ;
-      context.lineTo(X_from_x(xy[0]),Y_from_y(xy[1])) ;
-    }
+    context.shadowBlur = 5;
+    context.shadowColor = this.color ;
     context.stroke() ;
     
     context.restore() ;
   }
-}
-function draw_particle_head(context, X, Y, scale, color, text){
-  context.save() ;
-  context.beginPath() ;
-  context.arc(X, Y, 5*scale, 0, 2*pi, true) ;
-  context.fillStyle = color ;
-  context.shadowBlur = 40;
-  context.shadowColor = color ;
-  context.fill() ;
-  context.fillStyle = 'rgb(255,255,255)' ;
-  context.font = (6*scale) + 'px arial' ;
-  context.textBaseline = 'middle' ;
-  context.textAlign    = 'center' ;
-  context.fillText(text, X, Y) ;
-  context.restore() ;
 }

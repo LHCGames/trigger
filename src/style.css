@@ -48,8 +48,6 @@ div.tab{ display : table ; }
 div.tab_row { display : table-row ; width : 100% ; }
 div.tab_cell{ display : table-cell ; vertical-align : top ; }
 
-body{ background : #000000 ; }
-
 table#table_decisions{
   width : 100% ;
 }
@@ -60,6 +58,7 @@ th.decision, td.decision{
 
 table#table_events_summary{
   width : 90% ;
+  background : white ;
 }
 th.events_summary, td.events_summary{
   font : 12pt arial ;
@@ -75,7 +74,7 @@ div#div_footer{
 }
 
 div#div_hidden{
-  display : none ;
+  /*display : none ;*/
 }
 div#div_topology{
   height : 136px ;
@@ -85,6 +84,50 @@ div#div_topology{
   background : rgba(255,255,255,0.75) ;
 }
 
+div#div_playSpace{
+  padding : 0px ;
+  height : 750px ;
+  overflow : hidden ;
+}
+
+button.play{
+  width : 150px ;
+  height : 75px ;
+  font : 24pt arial , sans-serif ;
+  margin : 20px ;
+}
+h2.play{
+  font : 24pt arial black , sans-serif ;
+  padding-left : 0.25em ;
+  margin : 0px ;
+}
+p.play{
+  font : 14pt georgia , serif ;
+  font-style : italic ;
+  padding : 0.0em ;
+  padding-left : 1.25em ;
+  margin : 0px ;
+}
+tr.play_odd{
+  background : #eeeeee ;
+}
+tr.play_even{
+  background : #dddddd ;
+}
+th.play_image{
+  height : 107px ;
+  padding : 0px ;
+}
+img.play{
+  margin : 0px ;
+  padding : 3px ;
+}
+table#table_play{
+  border-collapse : collapse ;
+}
+input#input_name{
+  font : 24pt arial ;
+}
 
 
 
@@ -160,3 +203,50 @@ th.combo{
   text-align : center ;
 }
 
+
+
+div#div_eventDisplay{
+  width : 750px ;
+  height : 750px ;
+}
+
+
+
+
+
+
+
+
+/* Taken from http://css.maxdesign.com.au/listamatic/horizontal03.htm */
+#navcontainer{
+  clear : both ;
+}
+#navcontainer ul{
+  padding-left: 0;
+  margin : 0px ;
+  margin-left: 0;
+  background-color: #006633;
+  background-color: #000000;
+  color: White;
+  float: left;
+  width: 100%;
+  font-family: arial, helvetica, sans-serif;
+  font-size : 22pt ;
+}
+#navcontainer ul li { display: inline; }
+#navcontainer ul li a{
+  padding: 0.2em 1em;
+  background-color: #000000 ;
+  color: White;
+  text-decoration: none;
+  float: left;
+  border-right: 1px solid #ffffff;
+}
+#navcontainer ul li a:hover{
+  background-color: #ffffff ;
+  color: #000000 ;
+}
+#currentNavButton{
+  background-color: #ffffff;
+  color: #003366;
+}
