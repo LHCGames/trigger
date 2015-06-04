@@ -6,6 +6,8 @@
 <link type="text/css" rel="stylesheet" media="all" href="style.css" />
 <script type="text/javascript" src="js/settings.js"></script>
 <script type="text/javascript" src="js/helper.js"></script>
+<script type="text/javascript" src="js/header_footer.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
 </head>
 <body onload="start()">
 
@@ -15,7 +17,7 @@
   <div id="div_teamname" class="tab_cell">Team CERN</div>
   <div id="div_header"   class="tab_cell"></div>
 </div>
-  <div id="navcontainer">
+  <div id="navcontainer" class="tab">
       <ul id="navlist">
       <li><a href="index.html">Home</a></li>
       <li><a href="play.html">Play</a></li>
@@ -25,25 +27,33 @@
     </ul>
   </div>
 
-<div class="right">
-  <h3>Trigger game</h3>
-  <div class="blurb">
-    <p>Welcome to the trigger game!  This game is currently in development.  You play the role of the "trigger" system of a major particle physics experiment, trying to save as many interesting physics events as possible.  It's a fast paced game where you have to match the on screen event displays as collisions occur, without making too many mistakes.</p>
-  </div>
+<div id="div_playSpace">
+  <h2>Trigger game</h2>
+  <p class="blurb">Welcome to the trigger game!  This game is currently in development.  You play the role of the "trigger" system of a major particle physics experiment, trying to save as many interesting physics events as possible.  It's a fast paced game where you have to match the on screen event displays as collisions occur, without making too many mistakes.</p>
   
-  <h3>Thanks and small print</h3>
-  <div class="blurb">
-    <p>The work to date has been made possible thanks to the generosity of the Ogden Trust.  The game is developed by Aidan Randle-Conde and Khuram Rashid, with support from Sam Gregson and Ben Still. We are grateful to the Grammar School at Leeds for their support and feedback.  We are grateful to CERN and soundbible for use of the CMS detector image, and the sounds, respectively.  Although we use the words "CERN", "ATLAS", and "CMS", we are not associated with them in any way, these are merely placeholder names.</p>
-  </div>
+  <p class="center">
+  <img id="img_GSAL" src="images/GSAL_photo.jpg" width="600px" height="400px" alt="Aidan, Ben and Sam at the Grammar School at Leeds"/>
+  </p>
+  
+  <p class="blurb center">This game was developed mostly by Aidan Randle-Conde as part of a series of interactive lectures with Ben Still and Sam Gregson.</p>
 </div>
 
 <div id="div_footer" class="tab">
 </div>
 
+<div id="div_hidden">
+  <img id="img_header" src="images/header.png"/>
+  <img id="img_footer" src="images/footer.png"/>
+  
+  <canvas id="canvas_name" width="100px" height="100px"></canvas>
+  <canvas id="canvas_collaborative" width="100px" height="100px"></canvas>
+  <canvas id="canvas_oneChance" width="100px" height="100px"></canvas>
+  <canvas id="canvas_pro" width="100px" height="100px"></canvas>
+  <canvas id="canvas_vs" width="100px" height="100px"></canvas>
+  <canvas id="canvas_story" width="100px" height="100px"></canvas>
 </div>
 
-
-
+</div>
 
 </body>
 </html>

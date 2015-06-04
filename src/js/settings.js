@@ -17,8 +17,8 @@ var nCharsPerName = 32 ;
 // Colours.
 var text_color = 'black' ;
 var eventDisplay_fillColor = '#000000' ;
-var collision_matched_color    ='rgba(0,255,0,0.8)' ; 
-var collision_notMatched_color ='rgba(255,0,0,0.8)' ;
+var collision_matched_color    = 'rgba(0,255,0,0.8)' ; 
+var collision_notMatched_color = 'rgba(255,0,0,0.8)' ;
 
 // probabilities for each kind of collision.
 var probability_Higgs = 0.1 ;
@@ -36,6 +36,7 @@ var time_animate_histogram = 5000 ;
 var delay = 50 ;
 var delay_animate_histogram = 50 ;
 var delay_enable_click = 500 ;
+var delay_drawStep = 50 ;
 
 // Dimensions of the detector and canvas
 // "S" refers to the detector.
@@ -64,3 +65,64 @@ var yMax = Sr ;
 
 // Colours for the particles:
 var track_color = 'rgb(200,200,200)' ;
+
+function team_object(title, color, box_x, box_y, box_w, box_h){
+  this.title = title  ;
+  this.color = color ;
+  this.nSigma = 0 ;
+  
+  this.apply_style = function(){
+    // Just change some colours to make everything "branded".
+    // This should probably be changed to something cooler later on.
+    // Also the border widths should be stored in settings.js.
+    document.body.style.background = this.color ;
+    Get('div_gameWrapper').style.border = '9px solid ' + this.color ;
+    Get('div_teamname'   ).style.backgroundColor = this.color ;
+    Get('div_header'     ).style.border = '1px solid ' + this.color ;
+    Get('div_footer'     ).color = this.color ;
+    if(canvas){
+      canvas.style.borderTop    = '9px solid ' + this.color ;
+      canvas.style.borderBottom = '9px solid ' + this.color ;
+    }
+  }
+  this.box = new experiment_box(box_x, box_y, box_w, box_h) ;
+  this.draw_experiment_box = function(context, image_name){
+    this.box.draw(context, this.title, this.color, image_name) ;
+  }
+}
+
+function experiment_box(x, y, w, h){
+  this.x = x ;
+  this.y = y ;
+  this.w = w ;
+  this.h = h ;
+  
+  this.draw = function(context, name, color, image_name){
+    // This just write some text and an image.  At the moment it draws things to the
+    // canvas, but let's not completely discount the idea of using the HTML DOM- it could
+    // be cheaper.
+    context.save() ;
+    context.font = '40px arial' ;
+    context.fillStyle = color ;
+    context.fillRect(x, y, w, h) ;
+    context.strokeRect(x, y, w, h) ;
+    
+    // Hard coded values!  These should be changed.
+    context.fillStyle = 'white'
+    context.fillText('Team', x+0.5*w, y+50) ;
+    context.fillText(name  , x+0.5*w, y+100) ;
+    context.drawImage(Get(image_name),  x+6, y+h-173) ;
+    
+    context.restore() ;
+  }
+  this.contains = function(x, y){
+    return (x>=this.x && x<=this.x+this.w && y>=this.y && y<=this.y+this.h) ;
+  }
+}
+
+var teams = [] ;
+teams['neutral'] = new team_object('CERN' , 'rgb(  0,  0,  0)',      -1,     -1,       0,      0) ;
+teams['ATLAS'  ] = new team_object('ATLAS', 'rgb(236,103, 29)', 0.05*cw, 0.5*ch, 0.35*cw, 0.4*ch) ;
+teams['CMS'    ] = new team_object('CMS'  , 'rgb( 17,133,193)', 0.60*cw, 0.5*ch, 0.35*cw, 0.4*ch) ;
+
+

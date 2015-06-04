@@ -29,6 +29,12 @@ var collision_object = function(){
   this.PNG = new psuedorandom_number_generator() ;
   this.PNG.set_seed(this.seed) ;
   
+  this.remake_generator = function(seed){
+    this.seed = seed ;
+    this.PNG = new psuedorandom_number_generator() ;
+    this.PNG.set_seed(this.seed) ;
+  }
+  
   // If the event is a Higgs event, give it a mass and set the flag.
   this.hMass = 0 ;
   this.isHiggs = false ;
@@ -64,7 +70,7 @@ var collision_object = function(){
     
     // Make some tracks and jets.
     var nTracks = pars.nTrack_min + floor(this.PNG.random()*(pars.nTrack_max-pars.nTrack_min)) ;
-    var nJets   = pars.nJet_min   + floor(this.PNG.random()*(pars.nJet_max-pars.nJet_min)) ;
+    var nJets   = pars.nJet_min   + floor(this.PNG.random()*(pars.nJet_max-pars.nJet_min)    ) ;
     
     for(var i=0 ; i<nTracks ; i++){
       var q = (this.PNG.random()<0.5) ? -1 : 1 ;
@@ -90,19 +96,24 @@ var collision_object = function(){
     }
   }
   
-  this.draw_tracks = function(context){
+  this.draw_step = function(context, step){
+    this.draw_tracks(context, step) ;
+    this.draw_jets(context, step) ;
+    this.draw_main_particles(context, step) ;
+  }
+  this.draw_tracks = function(context, step){
     for(var i=0 ; i<this.tracks.length ; i++){
-      this.tracks[i].draw(context) ;
+      this.tracks[i].draw(context, step) ;
     }
   }
-  this.draw_jets = function(context){
+  this.draw_jets = function(context, step){
     for(var i=0 ; i<this.jets.length ; i++){
-      this.jets[i].draw(context) ;
+      this.jets[i].draw(context, step) ;
     }
   }
-  this.draw_main_particles = function(context){
+  this.draw_main_particles = function(context, step){
     for(var i=0 ; i<this.main_particles.length ; i++){
-      this.main_particles[i].draw(context) ;
+      this.main_particles[i].draw(context, step) ;
     }
   }
   
@@ -111,12 +122,10 @@ var collision_object = function(){
       var trigger = game.current_shift.trigger ;
       if(trigger.fired==true  && trigger.match_collision==false){
         game.state = 'game_over' ;
-        game.difficulty = 'easy' ;
         game.game_over_message = 'You should not have clicked that collision.' ;
       }
       else if(trigger.fired==false && trigger.match_collision==true){
         game.state = 'game_over' ;
-        game.difficulty = 'easy' ;
         game.game_over_message = 'Oops!  You missed a collision.' ;
       }
     }
@@ -126,7 +135,7 @@ var collision_object = function(){
 function make_collision(){
   // Generate a random event, populating it with main_particles.
   var r = random() ;
-  if(r<probability_Higgs && game.mode=='collaborative'){
+  if(false && r<probability_Higgs && game.mode=='collaborative'){
     return make_Higgs_collision(126) ;
   }
   else{
@@ -181,9 +190,6 @@ function collision_thread(){
     game.current_shift.current_collision.make_particles() ;
     detector.process_collision(game.current_shift.current_collision) ;
     
-    // Draw things.  This is expensive!
-    draw_eventDisplay(game.current_shift.current_collision, context) ;
-    
     // Speed up the event as the run continues.
     var dDelay = 0.5*(collision_delay - collision_delay_min) ;
     collision_delay = collision_delay - dDelay ;
@@ -207,8 +213,18 @@ function collision_thread(){
     // Enable the user to click.
     game.enable_click() ;
     
-    // Make the next collision.
-    window.setTimeout(collision_breather, collision_delay) ;
+    game.kill_drawStep = false ;
+    // Draw things.  This is expensive!
+    if(game.animate_eventDisplay){
+      game.draw_step = 0 ;
+      draw_eventDisplay_step_proxy() ;
+    }
+    else{
+      draw_eventDisplay_step(game.current_shift.current_collision, context, -1) ;
+      
+      // Make the next collision.
+      window.setTimeout(collision_breather, collision_delay) ;
+    }
   }
 }
 

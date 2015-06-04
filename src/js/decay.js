@@ -336,6 +336,17 @@ var VVH_decay_array = [
   ['muon'    , []] ,
   ['electron', []]
 ] ;
+var VVHNoTau_decay_array = [
+  ['signal'     , [ [ 1.0 , ['HBoson']] ]] ,
+  ['background' , [ [ 1.0 , ['ZBoson','ZBoson']], [1.0, ['WBoson','WBoson']], [ 1.0 , ['ZBoson']], [1.0, ['WBoson']] ]] ,
+  ['HBoson'     , [ [ 2.79e-2, ['ZBoson','ZBoson']], [0, ['WBoson','WBoson']], [0, ['ZBoson','photon']] , [0, ['unstableTau','unstableTau']], [0, ['muon'  ,'muon']] ]] ,
+  ['ZBoson'     , [ [ 0.0 , ['unstableTau', 'unstableTau']], [1.0, ['muon','muon']] , [1.0, ['electron','electron']] ]] ,
+  ['WBoson'     , [ [ 0.0 , ['unstableTau']], [1.0, ['muon']] , [1.0, ['electron']] ]] ,
+  ['unstableTau', [ [17.84, ['electron']], [17.36, ['muon']] , [67.0, ['tau']] ]] ,
+  ['tau'     , []] ,
+  ['muon'    , []] ,
+  ['electron', []]
+] ;
 
 
 function topLevel_decay_scheme(name, decay_array, signal_probability, background_probability){
@@ -352,6 +363,7 @@ all_decay_schema['WZToEMu'   ] = topLevel_decay_scheme('WZToEMu'   , WZToEMu_dec
 all_decay_schema['WZToEMuTau'] = topLevel_decay_scheme('WZToEMuTau', WZToEMuTau_decay_array, 0.0, 1.0) ;
 all_decay_schema['VV'        ] = topLevel_decay_scheme('VV'        , VV_decay_array        , 0.0, 1.0) ;
 all_decay_schema['VVH'       ] = topLevel_decay_scheme('VVH'       , VVH_decay_array       , 0.0, 1.0) ;
-
+all_decay_schema['VVHNoTau'  ] = topLevel_decay_scheme('VVHNoTau'  , VVHNoTau_decay_array  , 1.0, 1.0) ;
 
 var decay_scheme = all_decay_schema['VV'] ;
+var decay_scheme = all_decay_schema['VVHNoTau'] ;

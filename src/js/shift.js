@@ -39,6 +39,7 @@ function shift_object(PNG){
   
     // Draw the shift end screen.
     set_header_and_footer_images() ;
+    Get('div_header').appendChild(Get('table_music_player')) ;
     game.current_shift.draw_end_screen(context) ;
     game.state = 'shift_end' ;
     game.paused = true ;
@@ -94,12 +95,13 @@ function shift_object(PNG){
     context.fillText('Shift summary:', 0.5*cw, 0.15*ch) ;
     
     context.font = '40px arial' ;
-    context.fillText('Events saved: '      + this.statistics.values['total_savedEvents'] , 0.5*cw, 0.25*ch) ;
-    context.fillText('Correct clicks: '    + this.statistics.values['true_positives'   ] , 0.5*cw, 0.32*ch) ;
-    context.fillText('Incorrect clicks: '  + this.statistics.values['false_positives'  ] , 0.5*cw, 0.39*ch) ;
-    context.fillText('Collisions missed: ' + this.statistics.values['false_negatives'  ] , 0.5*cw, 0.46*ch) ;
+    context.fillText('Events saved: '       + this.statistics.values['total_savedEvents'] , 0.5*cw, 0.25*ch) ;
+    context.fillText('Correct clicks: '     + this.statistics.values['true_positives'   ] , 0.5*cw, 0.32*ch) ;
+    context.fillText('Incorrect clicks: '   + this.statistics.values['false_positives'  ] , 0.5*cw, 0.39*ch) ;
+    context.fillText('Collisions missed: '  + this.statistics.values['false_negatives'  ] , 0.5*cw, 0.46*ch) ;
+    //context.fillText('Collisions ignored: ' + this.statistics.values['true_negatives'   ] , 0.5*cw, 0.53*ch) ;
     context.font = '75px arial' ;
-    context.fillText('Score: '             + this.statistics.score()                     , 0.5*cw, 0.62*ch) ;
+    context.fillText('Score: ' + ((100/collisions_per_shift)*this.statistics.score()).toPrecision(3) + '%' , 0.5*cw, 0.62*ch) ;
     
     context.font = '30px arial' ;
     context.fillText('Thank you for contributing to science!'       , 0.5*cw, 0.72*ch) ;

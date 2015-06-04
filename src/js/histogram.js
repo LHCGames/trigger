@@ -2,7 +2,7 @@
 // then animating it to show the results.  Its psychologically important to see it animate
 // before the player's/audiences eyes!
 
-function four_lepton_mass_histogram(){
+function four_lepton_mass_histogram(canvas){
   this.nBins = histogram_nBins ;
   this.bins = [] ;
   this.binsInOrder_array = [] ;
@@ -14,6 +14,9 @@ function four_lepton_mass_histogram(){
   this.drawStyle = histogram_drawStyle ;
   this.mass_min = mass_min ;
   this.mass_max = mass_max ;
+  
+  this.canvas = canvas ;
+  this.context = this.canvas.getContext('2d') ;
   
   // Used for the animation.
   this.binsInOrder = [] ;
@@ -50,8 +53,8 @@ function four_lepton_mass_histogram(){
     }
     return total ;
   }
-  this.draw = function(context, theBins){
-    context.save() ;
+  this.draw = function(theBins){
+    this.context.save() ;
   
     // Okay, now things get messy.
     
@@ -68,26 +71,26 @@ function four_lepton_mass_histogram(){
     var mh = this.max_height()+2*sqrt(this.max_height()) ;
     
     // Clear the plotting area.
-    context.fillStyle = 'rgb(255,255,255)' ;
-    context.fillRect(0,0,w,h) ;
+    this.context.fillStyle = 'rgb(255,255,255)' ;
+    this.context.fillRect(0,0,w,h) ;
     
     // Set colours etc.
-    context.fillStyle = this.color ;
-    context.strokeStyle = this.color ;
-    context.textAlign = 'center' ;
-    context.font = '20px arial' ;
+    this.context.fillStyle = this.color ;
+    this.context.strokeStyle = this.color ;
+    this.context.textAlign = 'center' ;
+    this.context.font = '20px arial' ;
     
     // Draw a nice border around the plot area.
-    context.strokeRect(w*m,h*m,pw,ph) ;
+    this.context.strokeRect(w*m,h*m,pw,ph) ;
     
     // Draw the axis titles.  A bit messy, but works.
     var x_xAxisTitle = w*0.6 ;
-    var y_xAxisTitle = h - 0.25*m*h ;
-    context.fillText('mass (four leptons) [GeV]', x_xAxisTitle, y_xAxisTitle) ;
+    var y_xAxisTitle = h - 0.1*m*h ;
+    this.context.fillText('mass (four leptons) [GeV]', x_xAxisTitle, y_xAxisTitle) ;
     
-    var x_yAxisTitle = w*m*0.5 ;
+    var x_yAxisTitle = w*m*0.8 ;
     var y_yAxisTitle = h*0.1 ;
-    context.fillText('events', x_yAxisTitle, y_yAxisTitle) ;
+    this.context.fillText('events', x_yAxisTitle, y_yAxisTitle) ;
     
     // Now draw the bins one by one, including tick marks.  Tick marks are a pain.
     var bin_width = pw/(theBins.length) ;
@@ -101,16 +104,16 @@ function four_lepton_mass_histogram(){
       var tickLength = 0.1*m*h ;
       if(i%histogram_xAxisLAbelFrequency==0){
         // Now add a tick with a label.
-        context.fillText(mass, x, y) ;
+        this.context.fillText(mass, x, y) ;
         tickLength *=2 ;
       }
       
       // Draw the tick mark.
-      context.beginPath() ;
-      context.moveTo(x, h-1*m*h-tickLength) ;
-      context.lineTo(x, h-1*m*h+tickLength) ;
-      context.stroke() ;
-      context.closePath() ;
+      this.context.beginPath() ;
+      this.context.moveTo(x, h-1*m*h-tickLength) ;
+      this.context.lineTo(x, h-1*m*h+tickLength) ;
+      this.context.stroke() ;
+      this.context.closePath() ;
       
       // Check for an empty bin.  (Things can get tricky if you try to draw error bars on
       // a zero bin.)
@@ -121,44 +124,44 @@ function four_lepton_mass_histogram(){
         // Barchart.
         var x1 = w*m + i*bin_width ;
         var y1 = h - h*m ;
-        context.fillRect(x1, y1, bin_width, -ph*theBins[i]/(1+mh)) ;
+        this.context.fillRect(x1, y1, bin_width, -ph*theBins[i]/(1+mh)) ;
       }
       else{
         // Data points with error bars.
         var x2 = w*m + (i+0.5)*bin_width ;
         var y2 = h -h*m - ph*theBins[i]/(1+mh) ;
-        context.beginPath() ;
-        context.arc(x2,y2,5,0,2*pi,true) ;
-        context.closePath() ;
-        context.fill() ;
+        this.context.beginPath() ;
+        this.context.arc(x2,y2,5,0,2*pi,true) ;
+        this.context.closePath() ;
+        this.context.fill() ;
         var err = 0.5*ph*sqrt(theBins[i])/(1+mh) ;
-        context.beginPath();
-        context.moveTo(x2,y2-err) ;
-        context.lineTo(x2,y2+err) ;
-        context.stroke() ;
-        context.closePath() ;
+        this.context.beginPath();
+        this.context.moveTo(x2,y2-err) ;
+        this.context.lineTo(x2,y2+err) ;
+        this.context.stroke() ;
+        this.context.closePath() ;
       }
     }
     
     // Now the y-axis.  The tick intervals should be handled more gracefully than this.
-    context.beginPath() ;
+    this.context.beginPath() ;
     var di = 1 ;
     if(mh>=10  ) di =   2 ;
-    if(mh>=20  ) di =   5 ;
-    if(mh>=100 ) di =  20 ;
-    if(mh>=200 ) di =  50 ;
-    if(mh>=1000) di = 200 ;
-    if(mh>=2000) di = 500 ;
+    if(mh>=20  ) di =  10 ;
+    if(mh>=100 ) di =  10 ;
+    if(mh>=200 ) di =  25 ;
+    if(mh>=1000) di = 100 ;
+    if(mh>=2000) di = 250 ;
     for(var i=0 ; i<=mh ; i+=di){
       var x = m*w ;
       var y = h-h*m-ph*i/(1+mh) ;
-      context.moveTo(x-5,y) ;
-      context.lineTo(x+5,y) ;
-      context.fillText(i,0.5*m*w,y) ;
+      this.context.moveTo(x-5,y) ;
+      this.context.lineTo(x+5,y) ;
+      this.context.fillText(i,0.5*m*w,y) ;
     }
-    context.stroke() ;
+    this.context.stroke() ;
     
-    context.restore() ;
+    this.context.restore() ;
   }
   this.animate = function(){
     // Yuck, this needs to be tidied up.
@@ -166,27 +169,31 @@ function four_lepton_mass_histogram(){
     if(this.binsInOrder_index>=this.binsInOrder.length){
       // If we're on the final event, update the sigmas.  This should be done elsewhere.
       // But I was under a lot of time pressure.
-      var w = canvas.width  ;
-      var h = canvas.height ;
-      context.font = 0.1*w + 'px arial' ;
+      var w = this.canvas.width  ;
+      var h = this.canvas.height ;
+      this.context.font = 0.1*w + 'px arial' ;
+      this.context.fillStyle = this.color ;
       var nSigma = 3.6 + random()*0.6 ;
-      context.fillText(nSigma.toPrecision(2)+' \u03C3!!', 0.7*w, 0.25*h) ;
+      this.context.fillText(nSigma.toPrecision(2)+' \u03C3!', 0.7*w, 0.12*h) ;
       
-      if     (ATLAS_sigma<1) ATLAS_sigma = nSigma ;
-      else if(  CMS_sigma<1) CMS_sigma   = nSigma ;
+      if(experiments['ATLAS'].nSigma<1){
+        Get('button_analyse_CMS').style.display = '' ;
+        experiments['ATLAS'].nSigma = nSigma ;
+      }
+      else if(experiments['CMS'  ].nSigma<1){
+        Get('button_combine').style.display = '' ;
+        experiments['CMS'  ].nSigma = nSigma ;
+      }
       
       return ;
     }
     // Update the binsInOrder and redraw the histogram.
     this.binsInOrder_array[this.binsInOrder[this.binsInOrder_index]]++ ;
-    this.draw(context, this.binsInOrder_array) ;
+    this.draw(this.binsInOrder_array) ;
     this.binsInOrder_index++ ;
     
     // Send the signal for the next draw call.
-    window.setTimeout(animate_histogram, delay_animate_histogram) ;
+    window.setTimeout(spy.animate_histogram, delay_animate_histogram) ;
   }
-}
-function animate_histogram(){
-  histogram.animate() ;
 }
 

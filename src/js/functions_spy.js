@@ -273,10 +273,10 @@ function start(){
   
   // Add event listeners.  These are fairly straightforward.
   document.addEventListener('keydown', keyDown) ;
-  Get('button_freeze'       ).addEventListener('click', freeze) ;
-  Get('button_analyse_ATLAS').addEventListener('click', analyse_ATLAS) ;
-  Get('button_analyse_CMS'  ).addEventListener('click', analyse_CMS  ) ;
-  Get('button_combine'      ).addEventListener('click', combine_results  ) ;
+  Get('button_freeze'       ).addEventListener('click', freeze         ) ;
+  Get('button_analyse_ATLAS').addEventListener('click', analyse_ATLAS  ) ;
+  Get('button_analyse_CMS'  ).addEventListener('click', analyse_CMS    ) ;
+  Get('button_combine'      ).addEventListener('click', combine_results) ;
   
   // Set styles to be consistent with the players for "brand awareness".
   Get('h2_team_ATLAS').style.background = ATLAS_color ;
@@ -304,14 +304,6 @@ function start(){
   // Finally start the threads that retrieve the events from the server.
   ATLAS_get_event() ;
   CMS_get_event() ;
-}
-
-function update_score(){
-  // I'm pretty sure this isn't needed for the spy mode.
-  score = true_positives - 0.5*(false_positives+false_negatives) ;
-  if(score<0) score = 0 ;
-  Get('td_score').innerHTML = score ;
-  return score ;
 }
 
 

@@ -10,7 +10,7 @@ function make_eventDisplay_base(){
   var canvas_base = Get('canvas_eventDisplay_hidden') ;
   var context_base = canvas_base.getContext('2d') ;
   
-  context_base.drawImage(Get('img_CMSPhoto'),  -1, 15) ;
+  context_base.drawImage(Get('img_CMSPhoto'),  -1, 15, cw, ch) ;
   
   context_base.fillStyle = 'rgba(255,255,255,0.25)' ;
   context_base.fillRect(0,0,cw,ch) ;
@@ -36,15 +36,85 @@ function draw_eventDisplay(collision, context){
   detector.draw_active_segments(context) ;
   
   // Draw the tracks next.  So far these are only decorative.
-  collision.draw_tracks(context) ;
+  collision.draw_tracks(context, -1) ;
   
   // Now the jets.  These are collections of tracks of the same colour.
   // decorative so far.
-  collision.draw_jets(context) ;
+  collision.draw_jets(context, -1) ;
   
   // Draw the main particles last, as we need the player to see these very clearly.
   if(game.difficulty!='pro'){
-    collision.draw_main_particles(context) ;
+    collision.draw_main_particles(context, -1) ;
+  }
+  
+  // For debugging purposes, we can draw a mesh of cells again, this time on top of the
+  // detector components and particles.
+  if(game.overlay_cells) draw_cells(context) ;
+}
+
+function draw_eventDisplay_step_proxy(){
+  if(game.kill_drawStep){
+    var time_left = collision_delay*(100-game.draw_step)/100 ;
+    window.setTimeout(collision_breather, time_left) ;
+    return ;
+  }
+  var collision = game.current_shift.current_collision ;
+  if(game.draw_step==0){
+    var canvas_hidden = Get('canvas_eventDisplay_hidden_activity') ;
+    var context_hidden = canvas_hidden.getContext('2d') ;
+    draw_eventDisplay_step0(collision, context_hidden) ;
+  }
+  else{
+    draw_eventDisplay_step(collision, context, game.draw_step*game.draw_step_scale) ;
+  }
+  
+  if(game.paused==false){
+    var nSteps = collision_delay/delay_drawStep ;
+    var dStep = 100/nSteps ;
+    game.draw_step += dStep ;
+    game.draw_step = floor(game.draw_step) ;
+  }
+  if(game.draw_step<=100){
+    window.setTimeout(draw_eventDisplay_step_proxy, delay_drawStep) ;
+  }
+  else{
+    window.setTimeout(collision_breather, delay_drawStep) ;
+  }
+}
+
+function draw_eventDisplay_step0(collision, context){
+  // Clear the canvas so we start with a clean black background.
+  clear_canvas(context) ;
+  
+  // Draw the base image.
+  draw_eventDisplay_base(context) ;
+  
+  // For debugging purposes, we can draw a mesh of cells.
+  if(game.underlay_cells) draw_cells(context) ;
+  
+  // Draw the active segments over the top.
+  detector.draw_active_segments(context) ;
+}
+
+function draw_eventDisplay_step(collision, context, step){
+  context.drawImage(Get('canvas_eventDisplay_hidden_activity'),0,0) ;
+  
+  // For debugging purposes, we can draw a mesh of cells.
+  if(game.underlay_cells) draw_cells(context) ;
+  
+  // Draw the active segments over the top.
+  detector.draw_active_segments(context) ;
+  
+  // Draw the tracks next.  So far these are only decorative.
+  collision.draw_tracks(context, step) ;
+  
+  // Now the jets.  These are collections of tracks of the same colour.
+  // decorative so far.
+  collision.draw_jets(context, step) ;
+  
+  // Draw the main particles last, as we need the player to see these very clearly.
+  if(game.difficulty!='pro'){
+    collision.draw_main_particles(context, step) ;
   }
   
   // For debugging purposes, we can draw a mesh of cells again, this time on top of the
@@ -84,8 +154,6 @@ function draw_game_start_screen(){
   // Draw some text boxes.
   teams['ATLAS'].draw_experiment_box(context, 'img_ATLAS') ;
   teams['CMS'  ].draw_experiment_box(context, 'img_CMS'  ) ;
-  
-  //Get('div_eventDisplay').style.backgroundImage = 'url('+canvas.toDataURL()+')' ;
   
   context.restore() ;
 }

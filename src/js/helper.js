@@ -22,6 +22,9 @@ function psuedorandom_number_generator(){
   }
 }
 
+function min(a,b){ return Math.min(a,b) ; }
+function max(a,b){ return Math.max(a,b) ; }
+function   abs(x){ return Math. abs(x) ; }
 function   abs(x){ return Math. abs(x) ; }
 function  sqrt(x){ return Math.sqrt(x) ; }
 function  acos(x){ return Math.acos(x) ; }

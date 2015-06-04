@@ -14,7 +14,8 @@ function clear_footer(){
 }
 function set_header_image(){
   clear_header() ;
-  Get('div_header').appendChild(Get('img_header')) ;
+  //Get('div_header').appendChild(Get('img_header')) ;
+  Get('div_header').style.backgroundImage = 'url('+Get('img_header').src+')' ;
 }
 function set_footer_image(){
   clear_footer() ;

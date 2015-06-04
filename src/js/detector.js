@@ -221,8 +221,8 @@ function subdetector_wedge_object(r1, r2, phi1, phi2, nSegments, fillRgb0, fillR
   var yD = this.r2*sin(this.phi2) ;
   
   for(var i=0 ; i<this.nSegments ; i++){
-    var phi1Tmp = this.phi1 + (i-0.5)*this.segmentDPhi ;
-    var phi2Tmp = this.phi1 + (i+0.5)*this.segmentDPhi ;
+    var phi1Tmp = this.phi1 + (i-0.0)*this.segmentDPhi ;
+    var phi2Tmp = this.phi1 + (i+1.0)*this.segmentDPhi ;
     var x1 = xA + (xB-xA)*(i+0)/this.nSegments ;
     var y1 = yA + (yB-yA)*(i+0)/this.nSegments ;
     var x2 = xA + (xB-xA)*(i+1)/this.nSegments ;
@@ -292,15 +292,17 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
     // geometry is updated.  It adds the segment to the cells so that cells can turn the
     // segments on quickly.  This is where we look in (r,phi) space instead of (x,y)
     // space.
-    for(var i=0 ; i<detector.cells_linear.length ; i++){
-      if(detector.cells_linear[i].  rMid<this.r1   ) continue ;
-      if(detector.cells_linear[i].  rMid>this.r2   ) continue ;
-      if(detector.cells_linear[i].phiMid<this.phi1 ) continue ;
-      if(detector.cells_linear[i].phiMid>this.phi2 ) continue ;
-      detector.cells_linear[i].add_segment(this) ;
+    var i0 = floor(this.  r1/cellSizeR  ) ;
+    var i1 = floor(this.  r2/cellSizeR  ) ;
+    var j0 = floor(this.phi1/cellSizePhi) ;
+    var j1 = floor(this.phi2/cellSizePhi) ;
+    for(var i=i0 ; i<i1 ; i++){
+      for(var j=j0 ; j<j1 ; j++){
+        detector.cells[i][j].add_segment(this) ;
+      }
     }
+    return ;
   }
-  this.activate_cells() ;
   
   this.start_collision = function(){
     // It's very important that we reset these values for a new event!
@@ -333,7 +335,7 @@ function subdetector_segment_object(r1, r2, phi1, phi2, x1, y1, x2, y2, x3, y3, 
     var fg = Math.floor(this.fillRgb0[1]+this.response*(this.fillRgb1[1])) ;
     var fb = Math.floor(this.fillRgb0[2]+this.response*(this.fillRgb1[2])) ;
     
-    // Okay, enough rambling, let's just draw this thing
+    // Okay, enough rambling, let's just draw this thing.
     context.fillStyle = 'rgb(' + fr + ',' + fg + ',' + fb + ')' ;
     context.fill() ;
     context.restore() ;
@@ -438,33 +440,33 @@ function make_detector(){
   
   // Let's make a few subdetectors:
   // Line colours first.
-  var ptrkColor = 'rgb(255,255,255)' ; // Pixel tracker.
-  var strkColor = 'rgb(  0,150,150)' ; // Silicon tracker (should really be first.)
+  var strkColor = 'rgb(255,255,255)' ; // Pixel tracker.
+  var ptrkColor = 'rgb(  0,150,150)' ; // Silicon tracker (should really be first.)
   var ecalColor = 'rgb(  0,200,  0)' ; // Electromagnetic calorimeter.
   var hcalColor = 'rgb(150,170,255)' ; // Hadronic calorimeter.
   var mcalColor = 'rgb(250,  0,  0)' ; // Muon chambers.  (In reality this a collection of many subdetectors.)
   
   // Now fill colours.  Each subdetector has a linear gradient between the pairs of stops.
-  var ptrkRgb0 = [100,100,100] ; var ptrkRgb1 = [255,255,255] ;
-  var strkRgb0 = [  0,150,150] ; var strkRgb1 = [  0,255,255] ;
+  var strkRgb0 = [100,100,100] ; var strkRgb1 = [255,255,255] ;
+  var ptrkRgb0 = [  0,150,150] ; var ptrkRgb1 = [  0,255,255] ;
   var ecalRgb0 = [ 0,100,   0] ; var ecalRgb1 = [255,255,255] ;
   var hcalRgb0 = [ 50, 50,100] ; var hcalRgb1 = [255,255,255] ;
   var mcalRgb0 = [255,100,100] ; var mcalRgb1 = [255,255,255] ;
   
   // Make the particle responses.  These are roughly inspired by physics knowledge.
-  var ptrkResponses = [] ;
-  ptrkResponses['pion'    ] = 1.0 ;
-  ptrkResponses['muon'    ] = 1.0 ;
-  ptrkResponses['electron'] = 1.0 ;
-  ptrkResponses['photon'  ] = 0.0 ;
-  ptrkResponses['tau'     ] = 1.0 ;
-  
   var strkResponses = [] ;
   strkResponses['pion'    ] = 1.0 ;
   strkResponses['muon'    ] = 1.0 ;
   strkResponses['electron'] = 1.0 ;
   strkResponses['photon'  ] = 0.0 ;
   strkResponses['tau'     ] = 1.0 ;
+  
+  var ptrkResponses = [] ;
+  ptrkResponses['pion'    ] = 1.0 ;
+  ptrkResponses['muon'    ] = 1.0 ;
+  ptrkResponses['electron'] = 1.0 ;
+  ptrkResponses['photon'  ] = 0.0 ;
+  ptrkResponses['tau'     ] = 1.0 ;
   
   var ecalResponses = [] ;
   ecalResponses['pion'    ] = 0.1 ;
@@ -489,8 +491,8 @@ function make_detector(){
   
   // Assemble the subdetectors.
   // function subdetector_object(name, r1, r2, spacing_r, spacing_phi, nLayers, nWedges, nSegments, fillColor, strokeColor)
-  var ptrk = new subdetector_object('ptrk', 0.03*Sr, 0.12*Sr, 0.01*Sr, 0.001*2*pi, 6, 12,  3, ptrkColor, ptrkRgb0, ptrkRgb1, ptrkResponses) ;
-  var strk = new subdetector_object('strk', 0.13*Sr, 0.27*Sr, 0.01*Sr, 0.002*2*pi, 5, 60,  1, strkColor, strkRgb0, strkRgb1, strkResponses) ;
+  var strk = new subdetector_object('strk', 0.03*Sr, 0.12*Sr, 0.01*Sr, 0.001*2*pi, 6, 12,  3, strkColor, strkRgb0, strkRgb1, strkResponses) ;
+  var ptrk = new subdetector_object('ptrk', 0.13*Sr, 0.27*Sr, 0.01*Sr, 0.002*2*pi, 5, 60,  1, ptrkColor, ptrkRgb0, ptrkRgb1, ptrkResponses) ;
   var ecal = new subdetector_object('ecal', 0.30*Sr, 0.49*Sr, 0.01*Sr, 0.005*2*pi, 4, 12, 12, ecalColor, ecalRgb0, ecalRgb1, ecalResponses) ;
   var hcal = new subdetector_object('hcal', 0.52*Sr, 0.70*Sr, 0.01*Sr, 0.005*2*pi, 3, 16,  8, hcalColor, hcalRgb0, hcalRgb1, hcalResponses) ;
   var mcal = new subdetector_object('mcal', 0.72*Sr, 0.99*Sr, 0.03*Sr, 0.003*2*pi, 3, 18, 10, mcalColor, mcalRgb0, mcalRgb1, mcalResponses) ;

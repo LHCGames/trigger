@@ -14,10 +14,12 @@ function particle_object(type, charge, pt, phi, x0, y0, isCosmic){
   
   this.track = new trackObject(this.charge, this.mass, this.pt, this.phi, x0, y0, this.settings.color, this.type, this.isCosmic) ;
   this.track.lineWidth = this.settings.lineWidth ;
-  this.draw = function(context){
-    this.track.draw(context) ;
+  this.draw = function(context, step){
+    this.track.draw(context, step) ;
     
-    var xy = this.track.trajectory[this.track.trajectory.length-1] ;
+    var last_point_index = (step<0) ? this.track.trajectory.length : floor(this.track.trajectory.length*step/100) ;
+    last_point_index = max(0,min(last_point_index, this.track.trajectory.length-1)) ;
+    var xy = this.track.trajectory[last_point_index] ;
     var X = X_from_x(xy[0]) ;
     var Y = Y_from_y(xy[1]) ;
     draw_particle_head(context, X, Y, 5, this.settings.color, this.settings.symbol, this.settings.headShape) ;
@@ -33,7 +35,7 @@ function jet_object(pt, phi, x0, y0, color, PNG){
   this.x0 = x0 ;
   this.y0 = y0 ;
   var remaining_pt = pt ;
-  var charge = (random()<0.5) ? 1 : -1 ;
+  var charge = (PNG.random()<0.5) ? 1 : -1 ;
   do{
     charge *= -1 ;
     var sign = -charge ;
@@ -45,9 +47,9 @@ function jet_object(pt, phi, x0, y0, color, PNG){
   for(var i=0 ; i<this.tracks.length ; i++){
     this.tracks[i].make_trajectory(detector) ;
   }
-  this.draw = function(context){
+  this.draw = function(context, step){
     for(var i=0 ; i<this.tracks.length ; i++){
-      this.tracks[i].draw(context) ;
+      this.tracks[i].draw(context, step) ;
     }
   }
 }
@@ -137,7 +139,7 @@ function trackObject(charge, mass, pt, phi, x0, y0, color, particle_type, isCosm
   }
   this.touch_cells = function(the_detector){
     // Touch all the cells so that the segments can get turned on.
-    for(var i=0 ; i<this.trajectory.length ; i++){
+    for(var i=0 ; i<this.trajectory.length && i<1000; i++){
       var xy = this.trajectory[i] ;
       var x = xy[0] ;
       var y = xy[1] ;
@@ -158,15 +160,22 @@ function trackObject(charge, mass, pt, phi, x0, y0, color, particle_type, isCosm
   this.make_trajectory(detector) ;
   this.touch_cells(detector) ;
   
-  this.draw = function(context){
+  this.draw = function(context, step){
+    // Normal stuff for the canvas.
     context.save() ;
     context.beginPath() ;
     
-    context.lineWidth = 2*this.lineWidth ;
-    context.strokeStyle = 'rgb(255,255,255)' ;
+    // We stop after a certain number of steps.  In this case step is a percentage of the
+    // number of points available.
+    var last_point_index = (step<0) ? this.trajectory.length : floor(this.trajectory.length*step/100) ;
+    last_point_index = Math.min(last_point_index, this.trajectory.length-1) ;
+    
+    // Walk through the trajectory.
     context.moveTo(X_from_x(this.trajectory[0][0]),Y_from_y(this.trajectory[0][1])) ;
+    
+    // rTmp makes sure we stop if we find r becoming smaller again.
     var rTmp = 0 ;
-    for(var i=0 ; i<this.trajectory.length ; i++){
+    for(var i=0 ; i<last_point_index ; i++){
       var xy = this.trajectory[i] ;
       var r = sqrt( pow(xy[0],2) + pow(xy[1],2) ) ;
       if(r<rTmp && this.isCosmic==false) break ;
@@ -179,8 +188,13 @@ function trackObject(charge, mass, pt, phi, x0, y0, color, particle_type, isCosm
       }
       context.lineTo(X_from_x(xy[0]),Y_from_y(xy[1])) ;
     }
+    
+    // Set line styles here.  Draw the first line.
+    context.lineWidth = 2*this.lineWidth ;
+    context.strokeStyle = 'rgb(255,255,255)' ;
     context.stroke() ;
     
+    // Now draw the second line, following the same path.
     context.lineWidth = this.lineWidth ;
     context.strokeStyle = this.color ;
     context.shadowBlur = 5;

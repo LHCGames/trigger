@@ -25,6 +25,11 @@ function statistics_object(){
   }
 }
 
+function player_object(){
+  this.list_of_names = ['Peter Higgs' , 'Brian Cox' , 'Rolf Heuer' , 'Fabiola Gionatti', 'Emmy Noether' , 'Nield Bohr' , 'Marie Curie' , 'Carlo Rubbia' , 'Lisa Randall'] ;
+  this.name = this.list_of_names[floor(random()*this.list_of_names.length)] ;
+}
+
 function game_object(){
   this.state = 'preamble' ;
   this.mode = 'collaborative' ;
@@ -34,6 +39,20 @@ function game_object(){
   this.muted  = true ;
   this.can_click = true ;
   this.team_name = 'neutral' ;
+  
+  this.player = new player_object() ;
+  
+  // Settings for animating the event display.
+  // This is expressed as percentage of how "complete" the animation is.  Once this is
+  // > 100% the animation stops.
+  this.draw_step = 0 ;
+  // Allow the user to turn off the animations if they get annoying etc.
+  this.animate_eventDisplay = true ;
+  // Allow the app to stop the animation.
+  this.kill_drawStep = false ;
+  // This is used to "speed up" the animation.  A scale of 2 will go through the
+  // animation twice as quickly, and when it reaches 100% it'll stay at the end.
+  this.draw_step_scale = 2 ;
   
   this.seed = floor(1e9*random()) ;
   this.PNG = new psuedorandom_number_generator() ;
@@ -60,6 +79,7 @@ function game_object(){
     for(var i=0 ; i<this.shifts.length ; i++){
       this.statistics.add_statistics(this.shifts[i].statistics) ;
     }
+    this.statistics.add_statistics(this.current_shift.statistics) ;
   }
   
   this.update_score = function(){
@@ -93,79 +113,89 @@ function game_object(){
   
   this.draw_game_over_screen = function(){
     draw_eventDisplay(this.current_shift.current_collision, context) ;
-    //this.current_shift.trigger.draw_failure(context) ;
-    context.fillStyle = '#ffffff' ;
-    context.textAlign = 'center' ;
-    context.font = '70px arial' ;
-    context.fillText('Game over!', 0.5*cw, 0.27*ch) ;
+    this.current_shift.trigger.draw_failure(context) ;
     
-    context.lineWidth = 1 ;
-    context.font = '30px arial' ;
-    context.fillText(this.game_over_message, 0.5*cw,  0.40*ch) ;
+    //context.fillStyle = '#ffffff' ;
+    //context.textAlign = 'center' ;
+    //context.font = '70px arial' ;
+    //context.fillText('Game over!', 0.5*cw, 0.27*ch) ;
+    
+    //context.lineWidth = 1 ;
+    //context.font = '30px arial' ;
+    //context.fillText(this.game_over_message, 0.5*cw,  0.40*ch) ;
     
     this.update_statistics() ;
-    context.font = '70px arial' ;
-    context.fillText('Final score: ' + this.statistics.score(), 0.5*cw,  0.70*ch) ;
-  }
-}
-
-function team_object(title, color, box_x, box_y, box_w, box_h){
-  this.title = title  ;
-  this.color = color ;
-  
-  this.nSigma = 0 ;
-  
-  this.apply_style = function(){
-    // Just change some colours to make everything "branded".
-    // This should probably be changed to something cooler later on.
-    // Also the border widths should be stored in settings.js.
-    canvas.style.borderTop    = '9px solid ' + this.color ;
-    canvas.style.borderBottom = '9px solid ' + this.color ;
-    Get('div_gameWrapper').style.border = '9px solid ' + this.color ;
-    Get('div_teamname'   ).style.backgroundColor = this.color ;
-    Get('div_header'     ).style.border = '1px solid ' + this.color ;
-    Get('div_footer'     ).color = this.color ;
-    document.body.style.background = this.color ;
-  }
-  this.box = new experiment_box(box_x, box_y, box_w, box_h) ;
-  this.draw_experiment_box = function(context, image_name){
-    this.box.draw(context, this.title, this.color, image_name) ;
-  }
-}
-
-function experiment_box(x, y, w, h){
-  this.x = x ;
-  this.y = y ;
-  this.w = w ;
-  this.h = h ;
-  
-  this.draw = function(context, name, color, image_name){
-    // This just write some text and an image.  At the moment it draws things to the
-    // canvas, but let's not completely discount the idea of using the HTML DOM- it could
-    // be cheaper.
-    context.save() ;
-    context.font = '40px arial' ;
-    context.fillStyle = color ;
-    context.fillRect(x, y, w, h) ;
-    context.strokeRect(x, y, w, h) ;
+    var score = this.statistics.values['true_positives'] + this.statistics.values['true_negatives'] ;
+    //context.font = '70px arial' ;
+    //context.fillText('Final score: ' + score, 0.5*cw,  0.70*ch) ;
     
-    // Hard coded values!  These should be changed.
-    context.fillStyle = 'white'
-    context.fillText('Team', x+0.5*w, y+50) ;
-    context.fillText(name  , x+0.5*w, y+100) ;
-    context.drawImage(Get(image_name),  x+6, y+h-173) ;
+    var divWrapper = Get('div_eventDisplay') ;
+    divWrapper.innerHTML = '<br />' ;
+    divWrapper.style.backgroundImage = 'url('+canvas.toDataURL()+')' ;
     
-    context.restore() ;
-  }
-  this.contains = function(x, y){
-    return (x>=this.x && x<=this.x+this.w && y>=this.y && y<=this.y+this.h) ;
+    var divTmp = Create('div') ;
+    divTmp.className = 'game_over' ;
+    
+    var h2 = Create('h2') ;
+    h2.className = 'game_over' ;
+    h2.innerHTML = 'Game over!' ;
+    divTmp.innerHTML = '<br />' ;
+    divTmp.appendChild(h2) ;
+    
+    var p = Create('p') ;
+    p.className = 'game_over' ;
+    p.innerHTML = this.game_over_message ;
+    divTmp.appendChild(p) ;
+    
+    var p2 = Create('p') ;
+    p2.className = 'game_over_score' ;
+    p2.innerHTML = 'Score = ' +score + ' collisions' ;
+    divTmp.appendChild(p2) ;
+    divWrapper.appendChild(divTmp) ;
+    
+    divTmp = Create('div') ;
+    divTmp.className = 'game_over' ;
+    
+    var button = Create('button') ;
+    button.innerHTML = 'Submit score' ;
+    button.className = 'game_over' ;
+    button.id = 'button_submitScore' ;
+    button.addEventListener('click', submit_score_suddenDeath) ;
+    divTmp.appendChild(button) ;
+    
+    button = Create('button') ;
+    button.innerHTML = 'Return home' ;
+    button.className = 'game_over' ;
+    button.id = 'button_returnHome' ;
+    button.addEventListener('click', home_screen) ;
+    divTmp.appendChild(button) ;
+    
+    divWrapper.appendChild(divTmp) ;
+    
+    Get('div_playSpace').appendChild(divWrapper) ;
+    Get('div_hidden'   ).appendChild(Get('canvas_eventDisplay')) ;
   }
 }
 
-var teams = [] ;
-teams['neutral'] = new team_object('CERN' , 'rgb(  0,  0,  0)',      -1,     -1,       0,      0) ;
-teams['ATLAS'  ] = new team_object('ATLAS', 'rgb(236,103, 29)', 0.05*cw, 0.5*ch, 0.35*cw, 0.4*ch) ;
-teams['CMS'    ] = new team_object('CMS'  , 'rgb( 17,133,193)', 0.60*cw, 0.5*ch, 0.35*cw, 0.4*ch) ;
+function home_screen(){
+  game.state = 'preamble' ;
+  var hiddenDiv = Get('div_hidden') ;
+  var playSpace = Get('div_playSpace') ;
+  while(playSpace.childNodes.length>0){ hiddenDiv.appendChild(playSpace.childNodes[0]) ; }
+  playSpace.appendChild(Get('div_playFrontPage')) ;
+  teams['neutral'].apply_style() ;
+}
+
+function submit_score_suddenDeath(){
+  submit_score() ;
+  var button = Get('button_submitScore')
+  var div = button.parentNode
+  div.removeChild(button) ;
+  var p = Create('p') ;
+  p.className = 'submit_score' ;
+  p.innerHTML = 'Score submitted!' ;
+  div.insertBefore(p, Get('button_returnHome')) ;
+}
 
 function heartbeat(){
   // A heartbeat for periodic updates.
@@ -182,70 +212,41 @@ function heartbeat(){
 }
 
 function start_collaborative_game(){
-  game.mode = 'collaborative' ;
   game.state = 'game_start' ;
-  Get('div_hidden'   ).appendChild(Get('navcontainer')) ;
-  Get('div_hidden'   ).appendChild(Get('table_play'  )) ;
-  Get('div_playSpace').appendChild(Get('canvas_eventDisplay')) ;
+  start_game('collaborative') ;
 }
 
 function start_suddenDeath_game(){
-  game.mode = 'suddenDeath' ;
-  game.state = 'game_start' ;
-  Get('div_hidden'   ).appendChild(Get('navcontainer')) ;
-  Get('div_hidden'   ).appendChild(Get('table_play'  )) ;
-  Get('div_playSpace').appendChild(Get('canvas_eventDisplay')) ;
+  game.state = 'shift_start' ;
+  start_game('suddenDeath') ;
+  game.start_shift() ;
 }
 
 function start_pro_game(){
-  game.mode = 'suddenDeath' ;
   game.difficulty = 'pro' ;
-  game.state = 'game_start' ;
-  Get('div_hidden'   ).appendChild(Get('navcontainer')) ;
-  Get('div_hidden'   ).appendChild(Get('table_play'  )) ;
+  start_suddenDeath_game() ;
+}
+
+function start_game(mode){
+  game.mode = mode ;
+  Get('div_hidden'   ).appendChild(Get('div_playFrontPage'  )) ;
   Get('div_playSpace').appendChild(Get('canvas_eventDisplay')) ;
+  game.can_click = true ;
 }
 
-function start(){
-  // Set the global variables.
-  canvas = Get('canvas_eventDisplay') ;
-  context = canvas.getContext('2d') ;
-  //context.translate(0.5,0.5) ;
-  context.lineCap = 'round' ;
-  
-  // Add eventListeners.  Originally only the canvas was clickable, but now the user does
-  // not know where the canvas ends, so the document is clickable instead.
-  document.addEventListener('keydown'   , keyDown          ) ;
-  canvas  .addEventListener('mousedown' , eventDisplayClick) ;
-  canvas  .addEventListener('touchstart', eventDisplayClick) ;
-  //document.addEventListener('mousedown', eventDisplayClick) ;
-  
-  Get('button_playCollaborative').addEventListener('click', start_collaborative_game) ;
-  Get('button_playSuddenDeath'  ).addEventListener('click', start_suddenDeath_game  ) ;
-  Get('button_playPro'          ).addEventListener('click', start_pro_game          ) ;
-  
-  Get('input_name' ).addEventListener('change', checkPlayerName ) ;
-  Get('button_name').addEventListener('click' , changePlayerName) ;
-  
-  // These are not visible, and are mainly there so we can make them visible for single
-  // player mode.
-  Get('span_eventsPerShift').innerHTML = collisions_per_shift ;
-  Get('span_shiftsPerGame' ).innerHTML = shifts_per_game ;
-  
-  // Apply the style to be neutral.  This is done so that we only need to set a single
-  // colour in settings.js and make the style function as complex as we like.
-  teams['neutral'].apply_style() ;
-  set_header_and_footer_images() ;
-  
-  // Make a histogram and trigger for use later.
-  histogram = new four_lepton_mass_histogram() ;
-  
-  heartbeat() ;
-  
-  window.setTimeout(begin, 10) ;
+function changePlayerName(){
+  var name = Get('input_name').value ;
+  game.player.name = name ;
 }
 
-function changePlayerName(){} ;
+function submit_score(){
+  var mode = game.mode ;
+  if(game.mode=='suddenDeath' && game.difficulty=='pro') mode = 'pro' ;
+  var request = '?task=add_score&score=' + game.statistics.score() + '&mode=' + mode + '&username=' + game.player.name ;
+  var uri = 'event_store.php'+request+'&sid=' + Math.random() ;
+  xmlhttp.open('GET', uri, true) ;
+  xmlhttp.send(null) ;
+}
 
 function checkPlayerName(){
   var name = Get('input_name').value ;
@@ -254,16 +255,27 @@ function checkPlayerName(){
   }
 }
 
-function begin(){
-  // Now do the expensive stuff.
-  make_detector() ;
+function pick_team(evt){
+  // This is a little messy, so maybe rewrite this (along with the draw functions) to make
+  // it easier to change.
   
-  // This is CPU intensive, so do it last
-  detector.make_cells() ;
-  for(var i=0 ; i<detector.segments.length ; i++){
-    detector.segments[i].activate_cells() ;
+  // First get the position of the mouse on the canvas.
+  // Check this for cross browser compatibility!  It's okay for Firefox, Safari, Chrome.
+  var x = evt.pageX - evt.target.offsetLeft ;
+  var y = evt.pageY - evt.target.offsetTop  ;
+  
+  // See if the user has hit a target.
+  var team_names = ['ATLAS','CMS'] ;
+  for(var i=0 ; i<team_names.length ; i++){
+    var click = (teams[team_names[i]].box.contains(x,y)) ;
+    if(click){
+      game.team_name = team_names[i] ;
+      game.state = 'shift_start' ;
+      game.start_shift() ;
+    }
   }
-  
-  make_eventDisplay_base() ;
+  teams[game.team_name].apply_style() ;
+  Get('div_teamname').innerHTML = 'Team ' + teams[game.team_name].title ;
 }
+
 

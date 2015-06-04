@@ -33,6 +33,7 @@ function trigger_object(topology, description, name){
   this.fire = function(){
     // Don't allow the user to fire more than once.
     if(this.fired) return ;
+    game.kill_drawStep = true ;
     
     // Now fire the trigger and draw the result on the screen
     this.fired = true ;
@@ -71,11 +72,11 @@ function trigger_object(topology, description, name){
       game.current_shift.statistics.values['total_savedEvents']++ ;
       
       // Check to see if the event is "Higgslike" or not.
-      //var Higgsy = match_topologies(game.current_shift.current_collision.topology, particle_archetypes['HBoson'].final_state_topologies) ;
-      //if(Higgsy){
-      //  game.current_shift.statistics.values['higgsy_events']++ ;
-      //  histogram.add_mass(game.current_shift.current_collision.hMass) ;
-      //}
+      var Higgsy = match_topologies(game.current_shift.current_collision.topology, decay_scheme['HBoson'].final_state_topologies) ;
+      if(Higgsy){
+        game.current_shift.statistics.values['higgsy_events']++ ;
+        histogram.add_mass(game.current_shift.current_collision.hMass) ;
+      }
     }
     else{
       if(this.match_collision){
@@ -174,8 +175,9 @@ var  e_trigger = new trigger_object(['electron'           ] , 'at least one elec
 var mm_trigger = new trigger_object(['muon','muon'        ] , 'at least two muons.'                , 'mm') ;
 var  m_trigger = new trigger_object(['muon'               ] , 'at least one muon.'                 , 'm' ) ;
 var em_trigger = new trigger_object(['electron','muon'    ] , 'at least one electron and one muon.', 'em') ;
-var em_trigger = new trigger_object(['electron','tau'     ] , 'at least one electron and one tau.' , 'et') ;
-var et_trigger = new trigger_object(['tau','muon'         ] , 'at least one tau and one muon.'     , 'tm') ;
+var et_trigger = new trigger_object(['electron','tau'     ] , 'at least one electron and one tau.' , 'et') ;
+var mt_trigger = new trigger_object(['tau','muon'         ] , 'at least one tau and one muon.'     , 'tm') ;
+var tt_trigger = new trigger_object(['tau','tau'          ] , 'at least two taus.'                 , 'tt') ;
 
 var all_triggers = [] ;
 all_triggers.push(ee_trigger) ;
@@ -184,24 +186,33 @@ all_triggers.push(mm_trigger) ;
 all_triggers.push( m_trigger) ;
 all_triggers.push(em_trigger) ;
 all_triggers.push(et_trigger) ;
+all_triggers.push(mt_trigger) ;
+all_triggers.push(tt_trigger) ;
 
 var cosmics_triggers = [] ;
 cosmics_triggers.push( m_trigger) ;
 
 var single_lepton_triggers = [] ;
-single_lepton_triggers.push( e_trigger) ;
-single_lepton_triggers.push( m_trigger) ;
+single_lepton_triggers.push(e_trigger) ;
+single_lepton_triggers.push(m_trigger) ;
+
+var EMu_triggers = [] ;
+EMu_triggers.push( e_trigger) ;
+EMu_triggers.push( m_trigger) ;
+EMu_triggers.push(ee_trigger) ;
+EMu_triggers.push(mm_trigger) ;
+EMu_triggers.push(em_trigger) ;
 
 var triggers_by_mode = [] ;
 
 triggers_by_mode['cosmics'   ] = cosmics_triggers ;
 triggers_by_mode['WZToEMu'   ] = single_lepton_triggers ;
+triggers_by_mode['EMu'       ] = EMu_triggers ;
 triggers_by_mode['WZToEMuTau'] = all_triggers ;
 triggers_by_mode['VV'        ] = all_triggers ;
 triggers_by_mode['VVH'       ] = all_triggers ;
 
-var triggers = triggers_by_mode['cosmics'] ;
-var triggers = triggers_by_mode['VV'] ;
+var triggers = triggers_by_mode['EMu'] ;
 
 // function to get a random trigger.  This should be edited to be tweakable in the
 // settings, based on difficulty, age range etc

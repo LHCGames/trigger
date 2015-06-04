@@ -8,60 +8,83 @@
 <script type="text/javascript" src="js/helper.js"></script>
 <script type="text/javascript" src="js/detector.js"></script>
 <script type="text/javascript" src="js/particle.js"></script>
-<script type="text/javascript" src="js/cell.js"></script>
+<script type="text/javascript" src="js/decay.js"></script>
 <script type="text/javascript" src="js/draw.js"></script>
 <script type="text/javascript" src="js/collision.js"></script>
 <script type="text/javascript" src="js/histogram.js"></script>
 <script type="text/javascript" src="js/trigger.js"></script>
-<script type="text/javascript" src="js/functions_spy.js"></script>
+<script type="text/javascript" src="js/header_footer.js"></script>
+<script type="text/javascript" src="js/game.js"></script>
+<script type="text/javascript" src="js/spy.js"></script>
 </head>
 <body onload="start()">
 
-<div id="div_spyWrapper" style="background:rgba(255,255,255,0.8)">
+<div id="div_gameWrapper">
 
-<div class="tab" id="div_spy_tab">
-  <div class="tab_row">
-    <div id="div_spy_ATLAS" class="tab_cell spy_tab_cell">
-      <h2 id="h2_team_ATLAS">Team ATLAS</h2>
-      <canvas id="canvas_ATLAS" width="500px" height="500px"></canvas>
-      <button type="button" id="button_analyse_ATLAS">Analyse!</button>
+  <div class="tab">
+    <div id="div_teamname" class="tab_cell">Team CERN</div>
+    <div id="div_header"   class="tab_cell"></div>
+  </div>
+  <div id="navcontainer" class="tab">
+    <ul id="navlist">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="play.html">Play</a></li>
+      <li><a href="scores.html">Scores</a></li>
+      <li><a href="spy.html">Spy mode</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+  </div>
+
+  <div id="div_playSpace">
+    <div class="tab" id="div_spy_tab">
+      <div class="tab_row">
+        <div id="div_spy_ATLAS" class="tab_cell spy_tab_cell">
+          <h2 id="h2_team_ATLAS">Team ATLAS</h2>
+          <canvas id="canvas_collision_ATLAS" width="350px" height="350px"></canvas>
+          <canvas id="canvas_histogram_ATLAS" width="350px" height="350px"></canvas>
+          <button type="button" id="button_analyse_ATLAS">Analyse!</button>
+        </div>
+        <div id="div_spy_CMS"   class="tab_cell spy_tab_cell">
+          <h2 id="h2_team_CMS">Team CMS</h2>
+          <canvas id="canvas_collision_CMS"   width="350px" height="350px"></canvas>
+          <canvas id="canvas_histogram_CMS"   width="350px" height="350px"></canvas>
+          <button type="button" id="button_analyse_CMS">Analyse!</button>
+        </div>
+      </div>
     </div>
-    <div id="div_spy_CMS"   class="tab_cell spy_tab_cell">
-      <h2 id="h2_team_CMS">Team CMS</h2>
-      <canvas id="canvas_CMS"   width="500px" height="500px"></canvas>
-      <button type="button" id="button_analyse_CMS">Analyse!</button>
+    <div class="center">
+      <button type="button" id="button_freeze">Freeze results!</button>
+      <button type="button" id="button_combine">Combine results!</button>
+      <table id="table_combo">
+        <tbody id="tbody_nSigma">
+          <tr>
+            <th id="th_ATLAS_nSigma" colspan="2">ATLAS: <span id="span_ATLAS_nSigma"></span></th>
+          </tr>
+          <tr>
+            <th id="th_CMS_nSigma" colspan="2">CMS: <span id="span_CMS_nSigma"></span></th>
+          </tr>
+        </tbody>
+        <tbody id="tbody_combo">
+        </tbody>
+      </table>
     </div>
   </div>
+  
+  <div id="div_footer" class="tab">
+  </div>
 </div>
-<div class="center">
-  <button type="button" id="button_freeze">Freeze results!</button>
-  <button type="button" id="button_combine">Combine results!</button>
-  <table id="table_combo">
-    <tbody id="tbody_combo">
-      <tr>
-        <th id="th_ATLAS_nSigma">ATLAS: <span id="span_ATLAS_nSigma"></span></th>
-      </tr>
-      <tr>
-        <th id="th_CMS_nSigma">CMS: <span id="span_CMS_nSigma"></span></th>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-
-
-<div id="div_spy_footer" class="tab">
-</div>
-
-</div>
-
-<pre id="pre_debug"></pre>
 
 <div id="div_hidden">
-  <img id="img_ATLAS" src="images/ATLAS.jpg" />
-  <img id="img_CMS"   src="images/CMS.jpg"   />
   <img id="img_header" src="images/header.png"/>
   <img id="img_footer" src="images/footer.png"/>
+  <img id="img_CMSPhoto" src="images/CMSPhoto.jpg" />
+  <canvas id="canvas_eventDisplay_hidden" width="750px" height="750px"></canvas>
+  <canvas id="canvas_eventDisplay_hidden_activity" width="750px" height="750px"></canvas>
+  
+  <audio id="audio_tada">
+    <source src="sounds/Tada.mp3" type="audio/mpeg">
+    <embed height="50" width="100" src="sounds/Tada.mp3">
+  </audio>
 </div>
 
 </body>

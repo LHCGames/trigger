@@ -43,14 +43,11 @@ function eventDisplayClick(evt){
 function keyDown(evt){
   var keyDownID = window.event ? event.keyCode : (evt.keyCode != 0 ? evt.keyCode : evt.which) ;
   switch(keyDownID){
-    case 77: // m
-      game.toggle_mute() ;
-      break ;
     case 80: // p
       game.toggle_pause() ;
     case 32: // Space
-      evt.preventDefault() ;
       break ;
   }
 }
+
 
