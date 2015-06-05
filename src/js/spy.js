@@ -10,6 +10,7 @@ var detector = new detector_object() ;
 function spy_object(){
   this.frozen = false ;
   this.draw_delay = 2500 ;
+  
   this.freeze = function(){
     spy.frozen = true ;
     Get('button_freeze'       ).style.display = 'none' ;
@@ -183,6 +184,7 @@ function experiment_object(name){
     var responseText = this.xmlhttp.responseText ;
     var seeds   = responseText.split(';')[0].split(',') ;
     var trigger = responseText.split(';')[1] ;
+    this.collision_id = parseInt(responseText.split(';')[2]) ;
     if(seeds.length==1){
       if(parseInt(seeds[0])==-1){
         this.request_collisions_from_server() ;
@@ -203,7 +205,7 @@ function experiment_object(name){
       this.request_collisions_from_server() ;
       return ;
     }
-    var seed = this.seeds.splice(0,1) ;
+    var seed = parseInt(this.seeds.splice(0,1)) ;
     detector.start_collision() ;
     var collision = new collision_object() ;
     if(game.mode=='cosmics') collision.isCosmic = true ;

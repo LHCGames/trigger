@@ -115,6 +115,7 @@ function particle_decay_collection(name){
     // Now get the daughter particles.  Careful, we need to clone this array so that we
     // don't change the original!
     var intermediate_topology = this.choose_decay_mode(PNG).slice(0) ;
+    
     for(var i=0 ; i<intermediate_topology.length ; i++){
       // We receive a particle name, so look up the particle archetype by this name.
       var intermediate = decay_scheme[intermediate_topology[i]] ;

@@ -66,7 +66,7 @@ if(isset($_GET['task'])){
     }
     if($success==false){
       // Default behaviour is to return nothing.
-      echo '-1;NONE' ;
+      echo '-1;NONE;' , $id ;
     }
   }
   else if($_GET['task']=='add_new_user'){

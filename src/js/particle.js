@@ -139,7 +139,7 @@ function trackObject(charge, mass, pt, phi, x0, y0, color, particle_type, isCosm
   }
   this.touch_cells = function(the_detector){
     // Touch all the cells so that the segments can get turned on.
-    for(var i=0 ; i<this.trajectory.length && i<1000; i++){
+    for(var i=0 ; i<this.trajectory.length ; i++){
       var xy = this.trajectory[i] ;
       var x = xy[0] ;
       var y = xy[1] ;
